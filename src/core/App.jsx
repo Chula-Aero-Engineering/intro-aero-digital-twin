@@ -37,7 +37,7 @@ export default function App() {
         <AircraftOverview aircraft={aircraft} />
         <div className="section-rule"><span>INPUTS</span><p>One shared aircraft state feeds every registered analysis feature.</p></div>
         <ParameterPanel aircraft={aircraft} onChange={updateParameter} />
-        <div className="section-rule"><span>ANALYSIS</span><p>Physics stays in pure JavaScript modules; features present results and decisions.</p></div>
+        <div className="section-rule"><span>ANALYSIS</span><p>Student physics stays in pure JavaScript modules; the shared core presents results and decisions.</p></div>
         <section className="analysis-area" aria-labelledby="analysis-title">
           <div className="section-heading">
             <p className="eyebrow">Registered capability</p>
