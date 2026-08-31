@@ -1,4 +1,4 @@
-# Physics modules
+# Student physics modules
 
 Keep engineering calculations here as small, pure JavaScript functions.
 
@@ -23,4 +23,4 @@ export function calculateSomething({ speedMps, areaM2 }) {
 }
 ```
 
-Physics modules calculate. Feature components display and interpret their results.
+Physics modules calculate. Data-only feature definitions interpret the results, and the instructor-owned core displays them.

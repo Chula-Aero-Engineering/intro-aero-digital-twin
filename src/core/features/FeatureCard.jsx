@@ -25,6 +25,13 @@ function validateAnalysis(analysis) {
   return analysis;
 }
 
+function validateFeatureContract(feature) {
+  const contractVersion = feature.contractVersion ?? 1;
+  if (contractVersion !== 1) {
+    throw new TypeError(`Unsupported feature contract version: ${contractVersion}.`);
+  }
+}
+
 function formatValue(result) {
   if (typeof result.value === "string") return result.value;
   const precision = Number.isInteger(result.precision) ? result.precision : 2;
@@ -57,6 +64,7 @@ export default function FeatureCard({ feature, aircraft, sequence }) {
   let analysis;
 
   try {
+    validateFeatureContract(feature);
     if (typeof feature.analyze !== "function") {
       throw new TypeError("The feature must export an analyze(aircraft) function.");
     }

@@ -11,9 +11,9 @@ Generate the feature described in this completed specification. Follow the fixed
 ChatGPT should return three complete new files:
 
 ```text
-src/physics/[feature-id].js
-src/features/[feature-id].feature.js
-tests/[feature-id].test.js
+src/student/physics/[feature-id].js
+src/student/features/[feature-id].feature.js
+tests/student/[feature-id].test.js
 ```
 
-If ChatGPT asks for the feature registry, `App.jsx`, CSS, shared components, or another feature, remind it that the embedded contract is complete and that data-only `*.feature.js` files are discovered and formatted automatically.
+If ChatGPT asks for the feature registry, `App.jsx`, CSS, shared components, or another feature, remind it that the embedded contract is complete and that data-only files in `src/student/features` are discovered and formatted automatically.

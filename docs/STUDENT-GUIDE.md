@@ -10,7 +10,7 @@ Learn the aerospace model before touching AI. Identify the governing equation, v
 
 ## B. Specify
 
-Copy [`templates/FEATURE-SPEC.md`](../templates/FEATURE-SPEC.md) into your assignment work and complete every section. Keep the feature narrow: one engineering question, one model, and a small number of outputs.
+Copy [`templates/FEATURE-SPEC.md`](../templates/FEATURE-SPEC.md) into `student-work/specs` and complete every section. Keep the feature narrow: one engineering question, one model, and a small number of outputs.
 
 ## C. Verify Before Coding
 
@@ -24,7 +24,7 @@ You should understand the engineering specification before submitting it. Do not
 
 ## E. Add the Files
 
-Manually create the three new files named in the specification: one physics file, one data-only `*.feature.js` definition, and one test file. Do not replace existing application files. The application discovers and formats the new feature automatically.
+Manually create the three new files named in the specification under `src/student/physics`, `src/student/features`, and `tests/student`. Do not replace existing files or edit `src/core`. The application discovers and formats the new feature automatically.
 
 ## F. Run
 

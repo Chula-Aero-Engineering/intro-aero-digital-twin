@@ -4,7 +4,7 @@ import {
   calculateLift,
   calculateRequiredCl,
   calculateWeight,
-} from "../src/physics/lift.js";
+} from "../../src/student/physics/lift.js";
 
 describe("lift physics", () => {
   it("produces 24.5 N for the reference case", () => {

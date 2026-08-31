@@ -46,9 +46,9 @@ List the results and engineering interpretation the dashboard must display. Do n
 
 Replace `[feature-id]` with a short kebab-case name. Create exactly these three new files:
 
-- `src/physics/[feature-id].js`
-- `src/features/[feature-id].feature.js`
-- `tests/[feature-id].test.js`
+- `src/student/physics/[feature-id].js`
+- `src/student/features/[feature-id].feature.js`
+- `tests/student/[feature-id].test.js`
 
 ## 12. Engineering Decision Enabled
 
@@ -63,12 +63,12 @@ Generate the complete contents of exactly the three new files named in Section 1
 ## Application contract
 
 - The application uses Vite, React, plain JavaScript, and Vitest.
-- Put all engineering equations in the `src/physics` file as exported pure functions.
+- Put all engineering equations in the `src/student/physics` file as exported pure functions.
 - Physics files have no React imports and no browser dependencies.
 - Use SI units internally and reject obviously invalid numeric inputs.
 - Concisely comment input units, output units, and important assumptions.
 - Do not add dependencies or modify existing files.
-- The application automatically discovers `src/features/*.feature.js` files.
+- The application automatically discovers `src/student/features/*.feature.js` files.
 - The feature file contains no React, JSX, HTML, CSS, class names, or inline styles. The application formats its structured data automatically.
 
 The shared `aircraft` object provides:
@@ -96,6 +96,7 @@ The `*.feature.js` file imports functions from its new physics file and exports 
 
 ```javascript
 export const feature = {
+  contractVersion: 1,
   id: "unique-kebab-case-id",
   title: "Feature title",
   description: "One-sentence engineering purpose",
@@ -130,6 +131,7 @@ export const feature = {
 Contract rules:
 
 - `results` contains one object per displayed result.
+- `contractVersion` is `1`; older files that omit it are treated as legacy Version 1.
 - `value` is a finite number or short text; `unit` is always a string, including `""` for dimensionless values.
 - `precision` is a non-negative integer for numeric display.
 - Use `emphasis: true` only for the primary result.

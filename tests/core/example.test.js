@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calculateWeight } from "../src/physics/example.js";
+import { calculateWeight } from "../../src/core/physics/example.js";
 
 describe("weight demonstration", () => {
   it("matches a known numerical case", () => {

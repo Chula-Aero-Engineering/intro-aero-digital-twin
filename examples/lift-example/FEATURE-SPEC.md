@@ -46,9 +46,9 @@ Display lift available, aircraft weight, required `CL`, supplied `CL`, verificat
 
 ## 11. Files to Create
 
-- `src/physics/lift.js`
-- `src/features/lift.feature.js`
-- `tests/lift.test.js`
+- `src/student/physics/lift.js`
+- `src/student/features/lift.feature.js`
+- `tests/student/lift.test.js`
 
 ## 12. Engineering Decision Enabled
 
@@ -63,9 +63,9 @@ Generate the complete contents of exactly the three new files in Section 11. Do 
 ## Application contract
 
 - Use Vite, React, plain JavaScript, and Vitest; do not add dependencies or modify existing files.
-- Put the governing equations only in exported pure functions in `src/physics/lift.js`.
+- Put the governing equations only in exported pure functions in `src/student/physics/lift.js`.
 - Use SI units, reject obviously invalid numeric inputs, and comment units and assumptions concisely.
-- The application automatically discovers `src/features/*.feature.js` files.
+- The application automatically discovers `src/student/features/*.feature.js` files.
 - `lift.feature.js` contains no React, JSX, HTML, CSS, class names, inline styles, or `component` property. The application formats its data automatically.
 
 The shared `aircraft` object provides `massKg`, `payloadKg`, `speedMps`, `densityKgM3`, `wingSpanM`, `wingAreaM2`, `meanChordM`, `cl`, `cgM`, and `neutralPointM`.
@@ -76,6 +76,7 @@ The shared `aircraft` object provides `massKg`, `payloadKg`, `speedMps`, `densit
 
 ```javascript
 export const feature = {
+  contractVersion: 1,
   id: "lift",
   title: "Lift analysis",
   description: "Compare modeled lift with aircraft weight at the current flight condition.",
@@ -106,7 +107,7 @@ Implement every Section 9 case in `verificationCases` using Boolean expressions 
 
 ## Test contract
 
-Use Vitest, import the pure functions directly from `src/physics/lift.js`, and implement every numerical, behavioral, and boundary case in Section 9. Do not claim passing tests proves model validity or real-world validation.
+Use Vitest, import the pure functions directly from `src/student/physics/lift.js`, and implement every numerical, behavioral, and boundary case in Section 9. Do not claim passing tests proves model validity or real-world validation.
 
 ## Required response format
 

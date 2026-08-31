@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "verify:core-boundary": "node scripts/verify-core-boundary.mjs"
   },
   "dependencies": {
     "react": "^19.2.8",

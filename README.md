@@ -39,11 +39,12 @@ Create a production build with `npm run build`.
 
 ## Repository map
 
-- `src/data/aircraft.js` — initial shared aircraft state and parameter definitions.
-- `src/physics` — pure JavaScript engineering calculations using SI units.
-- `src/features` — data-only analysis definitions discovered and formatted automatically.
-- `src/components` — reusable display patterns for inputs, verification, and decisions.
-- `tests` — automated verification of active physics modules.
+- `src/core` — instructor-owned application shell, aircraft state, rendering, styling, discovery, and demonstrations.
+- `src/student/physics` — student-owned pure JavaScript engineering calculations using SI units.
+- `src/student/features` — student-owned data-only analyses discovered and formatted automatically.
+- `src/student/models` — reserved for future student assumption and derivation modules.
+- `tests/core` and `tests/student` — instructor and student verification, kept separate.
+- `student-work/specs` — completed student specifications.
 - `templates` — feature specification, ChatGPT request, verification record, and checklist.
 - `examples/lift-example` — one complete, deliberately simple lift workflow reference.
 - `docs` — student, instructor, architecture, AI workflow, and troubleshooting guides.
@@ -56,7 +57,9 @@ Create a production build with `npm run build`.
 4. Run `npm test` and `npm run dev`.
 5. Compare the result with the manual calculation, test expected behavior, locate the equation in code, and use the result to answer the original engineering question.
 
-The application automatically discovers every `src/features/*.feature.js` file and renders it through the shared dashboard layout. Students do not write JSX or CSS and do not edit a registry, `App.jsx`, or existing features. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) and [`examples/lift-example`](examples/lift-example).
+The application automatically discovers every `src/student/features/*.feature.js` file and renders it through the shared dashboard layout. Students do not write JSX or CSS and do not edit the instructor-owned core. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) and [`examples/lift-example`](examples/lift-example).
+
+Instructor changes use a clean `core/<lesson-slug>` branch and are checked with `npm run verify:core-boundary -- --base main`. Repository rules in [`AGENTS.md`](AGENTS.md) tell Codex to preserve student work automatically.
 
 ## Teaching guides
 

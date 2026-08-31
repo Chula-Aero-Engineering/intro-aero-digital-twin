@@ -13,6 +13,7 @@ function approximatelyEqual(actual, expected, tolerance = 1e-9) {
 }
 
 export const feature = {
+  contractVersion: 1,
   id: "lift",
   title: "Lift analysis",
   description: "Compare modeled lift with aircraft weight at the current flight condition.",

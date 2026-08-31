@@ -1,0 +1,19 @@
+name: Core ownership boundary
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  protect-student-work:
+    if: startsWith(github.head_ref, 'core/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify that the core branch preserves student work
+        run: node scripts/verify-core-boundary.mjs --base "${{ github.event.pull_request.base.sha }}"
