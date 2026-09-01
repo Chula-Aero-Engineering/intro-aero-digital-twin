@@ -64,7 +64,31 @@ Determine whether the modeled wing can balance weight at the chosen condition an
 
 # Fixed AI Implementation Contract — Do Not Edit
 
-Generate the complete contents of exactly the three new files in Section 11. Do not request repository files or additional implementation instructions.
+This interaction has two mandatory phases. Do not skip Phase 1 even if the student asks for code immediately.
+
+## Phase 1 — Engineering interpretation and approval
+
+On the first response, generate no code, pseudocode, file contents, or implementation snippets. Return only an `## Implementation Interpretation` that states:
+
+1. the engineering question;
+2. `L = 0.5 ρ V² S CL`, `W = mg`, and `CL_required = W / (0.5 ρ V² S)`, with every symbol defined;
+3. the sufficient/insufficient comparison and any numerical tolerance;
+4. every input and SI unit;
+5. every output and SI unit;
+6. the expected physical behavior from Section 7;
+7. the assumptions and validity limits;
+8. all verification cases from Section 9; and
+9. the three exact paths from Section 11.
+
+End with: `No code has been generated yet. Reply exactly APPROVE ENGINEERING INTERPRETATION to authorize code generation, or describe the engineering correction needed.`
+
+If the student requests a correction, return a complete revised interpretation and no code. Do not invent or silently repair missing physics.
+
+## Phase 2 — Code generation after approval
+
+Generate code only after the student replies exactly `APPROVE ENGINEERING INTERPRETATION` in the same conversation. Approval authorizes only the displayed engineering interpretation; it does not prove the model or implementation is correct.
+
+After approval, generate the complete contents of exactly the three new files in Section 11. Do not request repository files or additional implementation instructions.
 
 ## Application contract
 
@@ -123,4 +147,4 @@ Use Vitest, import the pure functions directly from `src/student/physics/lift.js
 
 ## Required response format
 
-First state the three files, governing calculation, and verification approach. Then provide the complete contents of each file in separate labeled code blocks. If engineering information is missing, identify it instead of inventing a model.
+Before approval, return only the Implementation Interpretation and no code. After approval, briefly state that the approved interpretation is being implemented, then provide the complete contents of each file in separate labeled code blocks. If new missing or conflicting engineering information becomes apparent, stop and return a revised interpretation for approval instead of inventing a model.

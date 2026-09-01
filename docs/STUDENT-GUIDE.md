@@ -20,7 +20,9 @@ Perform at least one manual reference calculation. Define a numerical test, a te
 
 ## D. Ask AI
 
-Attach your one completed `FEATURE-SPEC.md` file to normal ChatGPT and send: “Generate the feature described in this completed specification. Follow the fixed AI implementation contract in the file.” Do not upload repository source files. The specification already contains the stable application contract ChatGPT needs.
+Attach your one completed `FEATURE-SPEC.md` file to normal ChatGPT and send: “Review the completed specification and follow the fixed AI implementation contract in the file. Show me the Implementation Interpretation first. Do not generate code until I approve it.” Do not upload repository source files. The specification already contains the stable application contract ChatGPT needs.
+
+ChatGPT must first restate the engineering interpretation without producing code. Compare its equations, variable definitions, units, sign conventions, classifications, assumptions, expected behavior, and tests with your specification and manual calculation. Correct the interpretation until it matches the intended model. Then reply exactly `APPROVE ENGINEERING INTERPRETATION`. Only after that approval may ChatGPT generate the three files.
 
 You should understand the engineering specification before submitting it. Do not ask ChatGPT to choose an aerospace model or rebuild the whole application.
 

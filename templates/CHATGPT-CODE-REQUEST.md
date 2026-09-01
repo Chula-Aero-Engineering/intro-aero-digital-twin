@@ -5,10 +5,18 @@ The reusable implementation instructions now travel inside every copy of `FEATUR
 After completing Sections 1–12 of `FEATURE-SPEC.md`, attach that one file to a normal ChatGPT conversation and send:
 
 ```text
-Generate the feature described in this completed specification. Follow the fixed AI implementation contract in the file.
+Review the completed specification and follow the fixed AI implementation contract in the file. Show me the Implementation Interpretation first. Do not generate code until I approve it.
 ```
 
-ChatGPT should return three complete new files:
+ChatGPT's first response must contain the engineering interpretation and no code. Check its equations, definitions, units, sign conventions, conditions, assumptions, expected behavior, and verification cases against your specification and manual calculation.
+
+If anything is wrong or ambiguous, describe the correction. ChatGPT must return a complete revised interpretation and still must not generate code. When the interpretation is correct, reply exactly:
+
+```text
+APPROVE ENGINEERING INTERPRETATION
+```
+
+Only then should ChatGPT return three complete new files:
 
 ```text
 src/student/physics/[feature-id].js

@@ -8,6 +8,8 @@
 - [ ] I manually calculated a reference case.
 - [ ] I defined expected physical behavior.
 - [ ] I defined verification cases before generating code.
+- [ ] I checked ChatGPT's engineering interpretation against my model and manual calculation.
+- [ ] I approved the engineering interpretation before ChatGPT generated code.
 - [ ] AI generated only the intended bounded feature.
 - [ ] I can identify where the engineering equation appears in the code.
 - [ ] The automated tests pass.

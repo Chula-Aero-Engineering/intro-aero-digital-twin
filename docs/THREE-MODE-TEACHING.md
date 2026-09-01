@@ -64,9 +64,11 @@ The interaction does not change by mode:
 3. Complete the engineering question, model, inputs, outputs, assumptions, validity limits, expected behavior, reference calculation, verification cases, visualization requirements, file names, and enabled decision.
 4. For Aircraft or Design mode, declare earlier function dependencies by signature inside the specification.
 5. Attach only that completed Markdown file to ordinary ChatGPT.
-6. Send: `Generate the feature described in this completed specification. Follow the fixed AI implementation contract in the file.`
-7. Save the three returned files under `src/student/physics`, `src/student/features`, and `tests/student`.
-8. Run tests, compare the manual case, inspect the equation, manipulate the visualization, and answer the engineering question.
+6. Ask ChatGPT to show its Implementation Interpretation first and generate no code.
+7. Check the equations, units, conditions, assumptions, behavior, and verification plan. Request a revised interpretation if needed.
+8. Reply `APPROVE ENGINEERING INTERPRETATION` only when the engineering interpretation is correct.
+9. Save the three returned files under `src/student/physics`, `src/student/features`, and `tests/student`.
+10. Run tests, compare the manual case, inspect the equation, manipulate the visualization, and answer the engineering question.
 
 The three generated files remain the same at every level. What becomes more sophisticated is the engineering specification, not the web-development task.
 

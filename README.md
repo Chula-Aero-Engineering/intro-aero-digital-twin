@@ -57,10 +57,11 @@ The canonical public repository is owned by the `Chula-Aero-Engineering` organiz
 ## Add one bounded feature
 
 1. Complete [`templates/FEATURE-SPEC.md`](templates/FEATURE-SPEC.md), including a manual calculation and tests defined before implementation. The file already contains the fixed application contract ChatGPT needs.
-2. Attach that one completed file to ordinary ChatGPT and say: “Generate the feature described in this completed specification.”
-3. Manually save the three complete new files ChatGPT returns.
-4. Run `npm test` and `npm run dev`.
-5. Compare the result with the manual calculation, test expected behavior, locate the equation in code, and use the result to answer the original engineering question.
+2. Attach that one completed file to ordinary ChatGPT and ask it to show its Implementation Interpretation without generating code.
+3. Check the interpreted physics, units, assumptions, behavior, and tests. Request corrections when needed, then reply `APPROVE ENGINEERING INTERPRETATION`.
+4. Manually save the three complete new files ChatGPT returns after approval.
+5. Run `npm test` and `npm run dev`.
+6. Compare the result with the manual calculation, test expected behavior, locate the equation in code, and use the result to answer the original engineering question.
 
 The application automatically discovers every `src/student/features/*.feature.js` file and renders it through the shared module workspace. Version 2 and 3 features may provide numeric plot points and simple point/arrow overlays; the core owns Three.js, SVG plotting, JSX, CSS, and responsive behavior. Existing Version 1 features remain compatible. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) and [`examples/lift-example`](examples/lift-example).
 

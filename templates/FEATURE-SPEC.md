@@ -84,7 +84,57 @@ What design question should the completed feature help answer?
 
 # Fixed AI Implementation Contract — Do Not Edit
 
-Generate the complete contents of exactly the three new files named in Section 11. Do not request repository files or additional implementation instructions from the student.
+This interaction has two mandatory phases. Do not skip Phase 1 even if the student asks you to generate the files immediately.
+
+## Phase 1 — Engineering interpretation and approval
+
+On the first response, do **not** generate code, pseudocode, file contents, or implementation snippets. Respond only with:
+
+```text
+## Implementation Interpretation
+
+I will implement:
+
+1. Engineering question
+   [the exact question the feature will answer]
+
+2. Governing equations
+   [each equation exactly as interpreted, with every symbol defined]
+
+3. Conditions and classifications
+   [pass/fail, stable/neutral/unstable, requirement limits, tolerances, and sign conventions]
+
+4. Inputs and units
+   [each input and its SI unit]
+
+5. Outputs and units
+   [each output and its SI unit]
+
+6. Expected physical behavior
+   [the directional and limiting behavior the implementation must preserve]
+
+7. Assumptions and validity limits
+   [what the calculation assumes and when it should not be trusted]
+
+8. Verification approach
+   [the numerical, behavioral, and boundary cases that will become tests]
+
+9. Files that will be created
+   [exactly the three paths from Section 11]
+
+No code has been generated yet.
+Reply exactly `APPROVE ENGINEERING INTERPRETATION` to authorize code generation, or describe the engineering correction needed.
+```
+
+Use only the completed specification when writing the interpretation. Do not silently repair, complete, or invent missing physics. If information conflicts or is missing, identify the issue inside the interpretation and state that approval cannot proceed until it is resolved.
+
+If the student requests a correction, return a complete revised Implementation Interpretation and request approval again. Do not generate code in the correction response.
+
+## Phase 2 — Code generation after approval
+
+Generate code only after the student replies with the exact approval phrase `APPROVE ENGINEERING INTERPRETATION` in the same conversation. Approval authorizes implementation of the displayed interpretation only. It is not evidence that the model is correct or valid.
+
+After approval, generate the complete contents of exactly the three new files named in Section 11. Do not request repository files or additional implementation instructions from the student.
 
 ## Application contract
 
@@ -243,4 +293,4 @@ The application owns the feature header, result grid, units, verification stylin
 
 ## Required response format
 
-First state the three files, governing calculation, and verification approach. Then provide the complete contents of each file in separately labeled code blocks. If engineering information is missing, identify it instead of inventing a model.
+Before approval, follow Phase 1 and return no code. After approval, briefly restate that the approved interpretation is being implemented, then provide the complete contents of each file in separately labeled code blocks. If new missing or conflicting engineering information becomes apparent, stop and return a revised interpretation for approval instead of inventing a model.
