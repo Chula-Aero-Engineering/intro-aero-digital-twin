@@ -223,6 +223,7 @@ export const feature = {
   assumptions: ["Short, model-specific assumption"],
   validityLimits: ["Condition outside which this model should not be trusted"],
   simulation: {
+    display: "response",
     durationS: 12,
     initialState: { pitchRad: 0, pitchRateRadS: 0 },
     controls: {},
@@ -327,6 +328,7 @@ Contract rules:
 - Do not include a component property or import React/shared UI components.
 - Export one `model` object from the feature file. A `derived` model returns `values`; a `load` model returns body-axis `forcesBodyN`, `momentsBodyNm`, and optional `values`; a `state-model` returns `derivatives` keyed by the declared reduced-order states.
 - `model.evaluate(runtimeContext)` receives `aircraft`, `state`, `timeS`, `controls`, `disturbance`, `derived`, `capabilities`, `forcesBodyN`, and `momentsBodyNm`. It must return finite data and must not mutate the context.
+- Use `simulation.display: "response"` when the lesson needs run controls, aircraft animation, and response histories. Use `"analysis-only"` when a Version 4 model must provide a capability but a time response would exceed or confuse the lesson's stated scope.
 - Use the aircraft frame `+x` forward, `+y` right wing, and `+z` up. The core owns fixed-step RK4 integration, animation, run controls, logging, and evidence export.
 
 Mode rules:

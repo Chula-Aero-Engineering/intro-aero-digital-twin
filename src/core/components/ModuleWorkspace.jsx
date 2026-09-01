@@ -7,10 +7,12 @@ import { learningModeFor, learningModes } from "../data/learningModes.js";
 import { buildCurriculum } from "../data/curriculum.js";
 import { capabilityContext } from "../simulation/runtime.js";
 import SimulationPanel, { simulationPlot } from "../simulation/SimulationPanel.jsx";
+import { showsSimulationResponse, simulationDisplayMode } from "../simulation/displayMode.js";
 import EvidenceReport from "./EvidenceReport.jsx";
 import { modelsForFeature } from "../capabilities/capabilityContract.js";
 
 function statusLabel(module) {
+  if (module.status === "installed" && module.runtimeReady && simulationDisplayMode(module.feature) === "analysis-only") return "Installed · capability ready";
   if (module.status === "installed" && module.runtimeReady) return "Installed · simulation ready";
   if (module.status === "installed") return "Installed analysis";
   if (module.status === "ready") return "Ready to build";
@@ -34,6 +36,7 @@ export default function ModuleWorkspace({ featureEntries, registry, aircraft, se
     () => activeModule?.entry ? modelsForFeature(activeFeature.id, registry) : [],
     [activeModule, activeFeature, registry],
   );
+  const showSimulation = showsSimulationResponse(activeFeature, activeModule?.runtimeReady);
   const analysis = useMemo(() => {
     if (!activeModule?.entry || activeModule.status !== "installed") return null;
     try {
@@ -44,7 +47,7 @@ export default function ModuleWorkspace({ featureEntries, registry, aircraft, se
   }, [activeModule, activeFeature, aircraft, modelEntries]);
   const [session, setSession] = useState(null);
   const onSessionChange = useCallback((next) => setSession(next), []);
-  const livePlot = activeModule?.runtimeReady ? simulationPlot(session) : null;
+  const livePlot = showSimulation ? simulationPlot(session) : null;
 
   function chooseTopic(topic) {
     setSelectedTopicId(topic.id);
@@ -96,14 +99,14 @@ export default function ModuleWorkspace({ featureEntries, registry, aircraft, se
       <div className="module-stage" role="tabpanel">
         {activeModule ? (
           <>
-            <AircraftViewport aircraft={aircraft} scene={analysis?.scene} attitude={activeModule.runtimeReady ? session?.state : null} />
-            {activeModule.status === "installed" && <SimulationPanel activeModule={activeModule} registry={registry} aircraft={aircraft} onSessionChange={onSessionChange} />}
+            <AircraftViewport aircraft={aircraft} scene={analysis?.scene} attitude={showSimulation ? session?.state : null} />
+            {activeModule.status === "installed" && showSimulation && <SimulationPanel activeModule={activeModule} registry={registry} aircraft={aircraft} onSessionChange={onSessionChange} />}
             {activeModule.entry ? (
               <>
                 {(analysis?.plots || []).map((plot) => <EngineeringPlot key={plot.id || plot.title} plot={plot} />)}
                 {livePlot && <EngineeringPlot plot={livePlot} />}
                 <FeatureCard feature={activeFeature} aircraft={aircraft} analysis={analysis} sequence={activeModule.descriptor?.stage || visibleModules.findIndex((module) => module.feature.id === activeFeature.id) + 1} />
-                <EvidenceReport aircraft={aircraft} activeModule={activeModule} registry={registry} analysis={analysis} session={activeModule.runtimeReady ? session : null} />
+                <EvidenceReport aircraft={aircraft} activeModule={activeModule} registry={registry} analysis={analysis} session={showSimulation ? session : null} />
               </>
             ) : (
               <article className={`planned-module planned-${activeModule.status}`}>

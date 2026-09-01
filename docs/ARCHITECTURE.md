@@ -62,6 +62,8 @@ export const model = {
 };
 ```
 
+Capability modules default to `simulation.display: "response"`. A module may use `"analysis-only"` when its model must remain available to downstream capability consumers but the lesson intentionally omits run controls, attitude animation, and response histories. Analysis-only modules still evaluate their capability at the selected condition.
+
 Model kinds are deliberately small:
 
 - `derived` returns `{ values }` such as loaded CG or static margin;

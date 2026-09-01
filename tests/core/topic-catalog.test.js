@@ -13,7 +13,9 @@ describe("topic-agnostic curriculum", () => {
   });
 
   it("keeps legacy modules installed while making only the first unmet chain stage ready", () => {
-    const curriculum = buildCurriculum(featureEntries, createCapabilityRegistry(featureEntries));
+    const stabilityIds = new Set(topicCatalog.find(({ id }) => id === "stability").modules.map(({ id }) => id));
+    const baselineEntries = featureEntries.filter(({ feature }) => !stabilityIds.has(feature.id));
+    const curriculum = buildCurriculum(baselineEntries, createCapabilityRegistry(baselineEntries));
     const foundations = curriculum.find(({ id }) => id === "foundations");
     const lift = curriculum.find(({ id }) => id === "lift");
     const stability = curriculum.find(({ id }) => id === "stability");
