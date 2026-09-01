@@ -53,3 +53,5 @@ Choose an engineering question, decide the scaffolding level, and identify autho
 If a lesson needs a new canonical aircraft input or shared behavior, complete [`templates/LESSON-CORE-SPEC.md`](../templates/LESSON-CORE-SPEC.md) with only the engineering information and ask Codex to add core support. Repository rules classify that as an instructor core update. Codex works on a clean `core/<lesson-slug>` branch, may read student work for compatibility, and may not change it. The local boundary checker and the `core/*` pull-request workflow independently enforce that separation.
 
 If compatibility cannot be maintained, resolve the required student migration explicitly before assigning the lesson rather than allowing an agent to rewrite existing student physics or tests.
+
+The completed stability teaching shell and dry-run sequence are documented in [`STABILITY-UNIT-RUNBOOK.md`](./STABILITY-UNIT-RUNBOOK.md). Its five feature briefs live in [`examples/stability-unit`](../examples/stability-unit/README.md).

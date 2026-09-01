@@ -50,6 +50,8 @@ Replace `[feature-id]` with a short kebab-case name. Create exactly these three 
 - `src/student/features/[feature-id].feature.js`
 - `tests/student/[feature-id].test.js`
 
+If the instructor assigned a dashboard feature ID, use that exact ID and filename so the feature appears in the intended lesson block.
+
 ## 12. Engineering Decision Enabled
 
 What design question should the completed feature help answer?
@@ -84,7 +86,19 @@ The shared `aircraft` object provides:
   meanChordM,
   cl,
   cgM,
-  neutralPointM
+  neutralPointM,
+  cm0,
+  cmAlphaPerRad,
+  angleOfAttackDeg,
+  disturbanceAlphaDeg,
+  airframeCgM,
+  payloadPositionM,
+  initialPayloadPositionM,
+  missionPayloadPositionM,
+  forwardCgLimitM,
+  aftCgLimitM,
+  dutchRollRealPartPerS,
+  dutchRollImagPartRadS
 }
 ```
 

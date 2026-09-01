@@ -67,5 +67,6 @@ Instructor changes use a clean `core/<lesson-slug>` branch and are checked with 
 - [`Instructor guide`](docs/INSTRUCTOR-GUIDE.md) — three levels of progressive scaffolding.
 - [`AI workflow`](docs/AI-WORKFLOW.md) — appropriate and inappropriate uses of AI.
 - [`Troubleshooting`](docs/TROUBLESHOOTING.md) — evidence-based recovery prompts.
+- [`Stability unit dry run`](docs/STABILITY-UNIT-RUNBOOK.md) — five-block instructor sequence and student feature IDs.
 
 This is intentionally not a complete aerospace analysis package. Atmosphere, drag, performance, stability, control, and structures remain future student features.

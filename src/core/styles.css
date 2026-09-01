@@ -14,6 +14,7 @@
 * { box-sizing: border-box; }
 body { margin: 0; min-width: 320px; background: var(--paper); }
 button, input { font: inherit; }
+button { color: inherit; }
 .hero { color: white; background: var(--green); padding: 24px max(24px, calc((100vw - 1180px) / 2)); }
 nav { display: flex; justify-content: space-between; gap: 24px; padding-bottom: 64px; font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; }
 .brand-mark { color: var(--lime); font-weight: 800; }
@@ -43,6 +44,21 @@ main { width: min(1180px, calc(100% - 48px)); margin: 0 auto; padding: 72px 0; }
 .input-with-unit { display: flex; align-items: center; gap: 10px; color: #66706b; font-size: .78rem; }
 input { width: 112px; padding: 9px 10px; border: 1px solid #aeb5aa; border-radius: 2px; color: var(--ink); background: white; text-align: right; }
 input:focus { outline: 3px solid #ffb39f; border-color: var(--accent); }
+.lesson-tabs { display: grid; grid-template-columns: repeat(6, minmax(120px, 1fr)); margin-bottom: 32px; border: 1px solid var(--ink); overflow-x: auto; }
+.lesson-tabs button { min-height: 64px; padding: 12px; border: 0; border-right: 1px solid var(--ink); background: white; cursor: pointer; font-size: .76rem; font-weight: 750; }
+.lesson-tabs button:last-child { border-right: 0; }
+.lesson-tabs button.active { color: white; background: var(--green); }
+.lesson-tabs button:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
+.lesson-intro { display: grid; grid-template-columns: .35fr 1fr 1fr; gap: 24px; align-items: start; margin-bottom: 32px; padding: 24px 0; border-top: 2px solid var(--ink); border-bottom: 1px solid var(--line); }
+.lesson-intro h3 { margin: 0; font-family: Georgia, serif; font-size: 2rem; font-weight: 400; }
+.lesson-intro > p:last-child { margin: 0; color: #66706b; line-height: 1.5; }
+.lesson-features { display: grid; gap: 32px; }
+.missing-feature { padding: 32px; border: 1px dashed #7d8781; background: #f1f2ec; }
+.missing-feature h3 { margin: 0 0 10px; font-family: Georgia, serif; font-size: 2.2rem; font-weight: 400; }
+.missing-feature > p:not(.eyebrow) { max-width: 760px; color: #66706b; line-height: 1.5; }
+.missing-feature code { display: inline-block; padding: 8px 10px; color: white; background: var(--ink); font-size: .82rem; }
+.missing-feature .missing-purpose { margin: 22px 0 0; font-size: .82rem; }
+.empty-lesson { color: #66706b; }
 .feature-card { border: 1px solid var(--ink); background: white; box-shadow: 10px 10px 0 #dfe3da; }
 .feature-card > header { display: flex; gap: 24px; padding: 26px; border-bottom: 1px solid var(--ink); }
 .feature-card header h2 { margin: 0 0 6px; font-family: Georgia, serif; font-size: 2rem; font-weight: 400; }
@@ -76,6 +92,8 @@ footer span { color: #a9b1ac; font-size: .75rem; text-transform: uppercase; lett
   .workflow span:nth-child(3) { border-right: 0; }
   .parameter-grid { grid-template-columns: repeat(2, 1fr); }
   .input-grid, .feature-content { grid-template-columns: 1fr; }
+  .lesson-tabs { grid-template-columns: repeat(6, 150px); }
+  .lesson-intro { grid-template-columns: 1fr; }
   .section-rule { flex-direction: column; gap: 8px; }
   .result-block, .subpanel { border-right: 0; }
 }
