@@ -46,6 +46,8 @@ Evaluate whether students can:
 
 The feature checklist is a working aid, not a graded reflection form. Prefer small, frequent additions over one semester-ending application-generation prompt.
 
+Use one repository and one persistent aircraft for the whole semester. A new lesson should extend the aircraft's capability stack rather than create another dashboard. The module rail keeps only one analysis visible at a time, while the same 3D aircraft and shared state remain on screen. Ask students to define a plot or overlay only when it makes the physical relationship easier to interpret.
+
 ## Assignment preparation
 
 Choose an engineering question, decide the scaffolding level, and identify authoritative course sources. Normal assignments create one file in each of `src/student/physics`, `src/student/features`, and `tests/student`. The shared renderer owns all JSX and CSS, while automatic discovery removes registry edits.
@@ -53,3 +55,5 @@ Choose an engineering question, decide the scaffolding level, and identify autho
 If a lesson needs a new canonical aircraft input or shared behavior, complete [`templates/LESSON-CORE-SPEC.md`](../templates/LESSON-CORE-SPEC.md) with only the engineering information and ask Codex to add core support. Repository rules classify that as an instructor core update. Codex works on a clean `core/<lesson-slug>` branch, may read student work for compatibility, and may not change it. The local boundary checker and the `core/*` pull-request workflow independently enforce that separation.
 
 If compatibility cannot be maintained, resolve the required student migration explicitly before assigning the lesson rather than allowing an agent to rewrite existing student physics or tests.
+
+See [`DEVICE-WORKFLOWS.md`](./DEVICE-WORKFLOWS.md) for the matched laptop, Codespaces/iPad, and github.dev/Pages routes.

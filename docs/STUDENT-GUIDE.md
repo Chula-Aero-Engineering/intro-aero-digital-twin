@@ -37,6 +37,8 @@ npm run dev
 
 Open the local address shown in the terminal. If the application stops, use the evidence-based prompts in [`TROUBLESHOOTING.md`](./TROUBLESHOOTING.md).
 
+On an iPad, use the browser-based Codespaces route in [`DEVICE-WORKFLOWS.md`](./DEVICE-WORKFLOWS.md). You add the same three files and run the same checks.
+
 ## G. Verify
 
 Run:
@@ -46,6 +48,8 @@ npm test
 ```
 
 Compare the displayed result to your manual calculation. Also change inputs to check the predicted qualitative behavior. A passing test only says that the code behaved as specified for those cases.
+
+If your feature includes a plot or 3D overlay, explain what every axis, point, or arrow means physically. The core draws it; your feature remains responsible for supplying correct engineering data.
 
 ## H. Inspect
 

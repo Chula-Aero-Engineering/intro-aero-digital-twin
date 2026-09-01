@@ -1,36 +1,6 @@
 import EngineeringDecision from "../components/EngineeringDecision.jsx";
 import VerificationPanel from "../components/VerificationPanel.jsx";
-
-function validateAnalysis(analysis) {
-  if (!analysis || typeof analysis !== "object") {
-    throw new TypeError("analyze() must return an analysis object.");
-  }
-  if (!Array.isArray(analysis.results) || analysis.results.length === 0) {
-    throw new TypeError("analysis.results must contain at least one result.");
-  }
-  if (!Array.isArray(analysis.verificationCases) || analysis.verificationCases.length === 0) {
-    throw new TypeError("analysis.verificationCases must contain at least one case.");
-  }
-  if (!analysis.decision || typeof analysis.decision !== "object") {
-    throw new TypeError("analysis.decision is required.");
-  }
-
-  analysis.results.forEach((result) => {
-    const validValue = typeof result.value === "string" || Number.isFinite(result.value);
-    if (!result.label || !validValue || typeof result.unit !== "string") {
-      throw new TypeError("Every result needs a label, finite number or text value, and unit string.");
-    }
-  });
-
-  return analysis;
-}
-
-function validateFeatureContract(feature) {
-  const contractVersion = feature.contractVersion ?? 1;
-  if (contractVersion !== 1) {
-    throw new TypeError(`Unsupported feature contract version: ${contractVersion}.`);
-  }
-}
+import { resolveFeatureAnalysis } from "./featureContract.js";
 
 function formatValue(result) {
   if (typeof result.value === "string") return result.value;
@@ -38,40 +8,8 @@ function formatValue(result) {
   return result.value.toFixed(precision);
 }
 
-function failedAnalysis(feature, error) {
-  return {
-    results: [
-      {
-        label: "Analysis unavailable",
-        value: "—",
-        unit: "",
-        emphasis: true,
-        note: error instanceof Error ? error.message : "The feature returned invalid data.",
-      },
-    ],
-    verificationCases: [
-      { label: "Feature output follows the application contract", passed: false },
-    ],
-    decision: {
-      question: feature.engineeringQuestion || "What engineering decision does this analysis enable?",
-      interpretation: "No engineering interpretation is available until the feature returns valid inputs, results, verification cases, and decision data.",
-      status: "caution",
-    },
-  };
-}
-
-export default function FeatureCard({ feature, aircraft, sequence }) {
-  let analysis;
-
-  try {
-    validateFeatureContract(feature);
-    if (typeof feature.analyze !== "function") {
-      throw new TypeError("The feature must export an analyze(aircraft) function.");
-    }
-    analysis = validateAnalysis(feature.analyze(aircraft));
-  } catch (error) {
-    analysis = failedAnalysis(feature, error);
-  }
+export default function FeatureCard({ feature, aircraft, analysis: suppliedAnalysis, sequence }) {
+  const analysis = suppliedAnalysis || resolveFeatureAnalysis(feature, aircraft);
 
   return (
     <article className="feature-card">

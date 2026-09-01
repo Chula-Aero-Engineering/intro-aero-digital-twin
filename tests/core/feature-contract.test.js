@@ -1,0 +1,26 @@
+import { describe, expect, it } from "vitest";
+import { resolveFeatureAnalysis } from "../../src/core/features/featureContract.js";
+
+const aircraft = { massKg: 1 };
+const validAnalysis = {
+  results: [{ label: "Value", value: 1, unit: "N" }],
+  verificationCases: [{ label: "Known case", passed: true }],
+  decision: { question: "Question?", interpretation: "Interpretation", status: "neutral" },
+};
+
+describe("feature contract compatibility", () => {
+  it("keeps unversioned legacy features working", () => {
+    expect(resolveFeatureAnalysis({ analyze: () => validAnalysis }, aircraft)).toBe(validAnalysis);
+  });
+
+  it("accepts Version 2 visualization data", () => {
+    const analysis = { ...validAnalysis, plots: [], scene: null };
+    expect(resolveFeatureAnalysis({ contractVersion: 2, analyze: () => analysis }, aircraft)).toBe(analysis);
+  });
+
+  it("converts unsupported contracts to a visible failure instead of crashing", () => {
+    const analysis = resolveFeatureAnalysis({ contractVersion: 99, analyze: () => validAnalysis }, aircraft);
+    expect(analysis.verificationCases[0].passed).toBe(false);
+    expect(analysis.results[0].value).toBe("—");
+  });
+});

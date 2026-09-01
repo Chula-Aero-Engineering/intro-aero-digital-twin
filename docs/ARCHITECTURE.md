@@ -5,17 +5,20 @@ The instructor-owned application has one shared aircraft state in `src/core/App.
 ```text
 src/core/data/aircraft.js
         ↓ initializes
- src/core/App.jsx ────→ AircraftOverview + ParameterPanel
+ src/core/App.jsx ────→ focused ParameterPanel
         │
         └── current aircraft state
                    ↓
           automatic *.feature.js discovery
                    ↓
-             FeatureCard
+          ModuleWorkspace
+          ├── AircraftViewport (Three.js)
+          ├── EngineeringPlot (SVG)
+          └── FeatureCard
                    ↓
           structured analysis data
                    ↓ fixed renderer
-          results + verification + decision
+ results + verification + decision + plot/overlay data
                    ↓ calls
       src/student/physics/*.js
                    ↑
@@ -35,9 +38,9 @@ src/core/data/aircraft.js
 
 ## Adding a feature
 
-A feature creates one physics file, one data-only `*.feature.js` definition, and one test file. `src/core/features/index.js` uses Vite's built-in discovery, so students do not edit the registry or `App.jsx`. The definition receives `aircraft` and returns the Version 1 result schema.
+A feature creates one physics file, one data-only `*.feature.js` definition, and one test file. `src/core/features/index.js` uses Vite's built-in discovery, so students do not edit the registry or `App.jsx`. Version 2 modules may also return plot series and simple point/arrow overlays. They still contain no rendering code.
 
-`src/core/features/FeatureCard.jsx` is instructor-owned. It validates the returned schema and renders every result, unit, verification case, decision, error state, and responsive layout consistently. A missing `contractVersion` is interpreted as legacy Version 1, so older generated features continue to work. Generated feature files contain no React, JSX, HTML, or CSS.
+`src/core/features/FeatureCard.jsx` and the visualization components are instructor-owned. They validate and render every result, unit, verification case, decision, plot, overlay, error state, and responsive layout consistently. A missing `contractVersion` is interpreted as legacy Version 1, so older generated features continue to work. The optimized Blender source lives at `assets/blender/course-aircraft.blend`; the app loads its 209 KB GLB export from `public/models`. Major parts retain separate names for later instructor visualization work. A procedural aircraft remains as an immediate-loading and asset-failure fallback.
 
 ## Ownership enforcement
 

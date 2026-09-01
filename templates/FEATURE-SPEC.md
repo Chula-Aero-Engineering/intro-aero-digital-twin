@@ -40,7 +40,11 @@ Define at least one numerical case, one behavioral case, and one boundary or san
 
 ## 10. Feature Requirements
 
-List the results and engineering interpretation the dashboard must display. Do not specify colors, layout, HTML, or CSS.
+List the results and engineering interpretation the dashboard must display.
+
+If a plot helps answer the engineering question, define its x-variable, y-variable, units, series, and the range or points to calculate. Otherwise write `No plot`.
+
+If a visual marker helps, request only one or more data overlays: a point at an aircraft-relative `{x, y, z}` position or an arrow with an origin and vector, all in meters. Otherwise write `No 3D overlay`. Do not specify colors, layout, HTML, CSS, Three.js, or chart code.
 
 ## 11. Files to Create
 
@@ -96,10 +100,12 @@ The `*.feature.js` file imports functions from its new physics file and exports 
 
 ```javascript
 export const feature = {
-  contractVersion: 1,
+  contractVersion: 2,
   id: "unique-kebab-case-id",
   title: "Feature title",
   description: "One-sentence engineering purpose",
+  category: "Course topic",
+  inputKeys: ["speedMps", "wingAreaM2"],
 
   analyze(aircraft) {
     // Call imported physics functions. Do not repeat governing equations here.
@@ -122,6 +128,32 @@ export const feature = {
         question: "Engineering question this feature answers",
         interpretation: "Qualified interpretation based on the current results",
         status: "pass"
+      },
+      plots: [
+        {
+          id: "unique-plot-id",
+          title: "Physical relationship",
+          xLabel: "Input name (unit)",
+          yLabel: "Output name (unit)",
+          series: [
+            {
+              label: "Series label",
+              color: "#ff5a36",
+              points: [{ x: 0, y: 0 }, { x: 1, y: 2 }]
+            }
+          ]
+        }
+      ],
+      scene: {
+        caption: "What this overlay represents",
+        overlays: [
+          {
+            type: "arrow",
+            origin: { x: 0, y: 0, z: 0 },
+            vector: { x: 0, y: 0, z: 1 },
+            color: "#dce9ad"
+          }
+        ]
       }
     };
   }
@@ -131,13 +163,16 @@ export const feature = {
 Contract rules:
 
 - `results` contains one object per displayed result.
-- `contractVersion` is `1`; older files that omit it are treated as legacy Version 1.
+- `contractVersion` is `2`; older Version 1 files and files that omit the version remain compatible.
+- `inputKeys` contains only canonical aircraft fields actually used by this module. The core uses it to show focused controls.
 - `value` is a finite number or short text; `unit` is always a string, including `""` for dimensionless values.
 - `precision` is a non-negative integer for numeric display.
 - Use `emphasis: true` only for the primary result.
 - `verificationCases` implements every case from Section 9 using the physics functions.
 - `passed` is a Boolean expression, not hard-coded `true`.
 - `decision.status` is `"pass"`, `"caution"`, or `"neutral"`.
+- Include `plots: []` when Section 10 says no plot. Plot points must be calculated from the physics functions, not typed as unexplained display values.
+- Include `scene: null` when Section 10 says no 3D overlay. Supported overlays are data-only `point` and `arrow` objects. Coordinates use the aircraft frame: +x forward, +y right wing, +z up.
 - Do not include a component property or import React/shared UI components.
 
 The application owns the feature header, result grid, units, verification styling, decision styling, error presentation, and responsive layout.

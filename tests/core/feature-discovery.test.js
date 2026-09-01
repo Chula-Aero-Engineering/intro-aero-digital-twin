@@ -4,7 +4,7 @@ import { features } from "../../src/core/features/index.js";
 describe("feature discovery", () => {
   it("loads instructor demonstrations and student feature files", () => {
     expect(features.map((feature) => feature.id)).toEqual(
-      expect.arrayContaining(["weight-demo", "lift"]),
+      expect.arrayContaining(["weight-demo", "geometry-visualization", "lift"]),
     );
   });
 

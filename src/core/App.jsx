@@ -1,12 +1,15 @@
 import { useState } from "react";
 import AircraftOverview from "./components/AircraftOverview.jsx";
 import ParameterPanel from "./components/ParameterPanel.jsx";
-import FeatureCard from "./features/FeatureCard.jsx";
+import ModuleWorkspace from "./components/ModuleWorkspace.jsx";
 import { features } from "./features/index.js";
+import { getFeatureInputKeys } from "./features/featureContract.js";
 import { initialAircraft } from "./data/aircraft.js";
 
 export default function App() {
   const [aircraft, setAircraft] = useState(initialAircraft);
+  const [selectedFeatureId, setSelectedFeatureId] = useState(features[0]?.id);
+  const selectedFeature = features.find((feature) => feature.id === selectedFeatureId) || features[0];
 
   function updateParameter(key, value) {
     setAircraft((current) => ({ ...current, [key]: value }));
@@ -34,24 +37,11 @@ export default function App() {
       </header>
 
       <main>
+        <div className="section-rule"><span>AIRCRAFT</span><p>The same shared aircraft persists while each module reveals a different engineering relationship.</p></div>
+        <ModuleWorkspace features={features} aircraft={aircraft} selectedId={selectedFeatureId} onSelect={setSelectedFeatureId} />
+        <div className="section-rule"><span>INPUTS</span><p>Only the current module's declared inputs are shown; legacy modules continue to receive the complete aircraft state.</p></div>
+        <ParameterPanel aircraft={aircraft} onChange={updateParameter} inputKeys={getFeatureInputKeys(selectedFeature)} />
         <AircraftOverview aircraft={aircraft} />
-        <div className="section-rule"><span>INPUTS</span><p>One shared aircraft state feeds every registered analysis feature.</p></div>
-        <ParameterPanel aircraft={aircraft} onChange={updateParameter} />
-        <div className="section-rule"><span>ANALYSIS</span><p>Student physics stays in pure JavaScript modules; the shared core presents results and decisions.</p></div>
-        <section className="analysis-area" aria-labelledby="analysis-title">
-          <div className="section-heading">
-            <p className="eyebrow">Registered capability</p>
-            <h2 id="analysis-title">Analysis features</h2>
-          </div>
-          {features.map((feature, index) => (
-            <FeatureCard
-              key={feature.id}
-              feature={feature}
-              aircraft={aircraft}
-              sequence={index + 1}
-            />
-          ))}
-        </section>
       </main>
 
       <footer>
