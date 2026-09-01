@@ -13,7 +13,7 @@ The GLB is deliberately small enough for classroom Wi-Fi and iPads. It is a styl
 
 ## Coordinate frame and named parts
 
-The course frame is `+x forward, +y right wing, +z up`. Named meshes include the fuselage, cowling, canopy, left/right wings, ailerons, horizontal tail, elevators, vertical tail, rudder, propeller, and landing gear. A hidden CG marker is retained in the Blender source for later instructor visualization work.
+The course uses the standard right-handed aircraft body frame: `+x forward, +y right wing, +z down`. Positive pitch and positive angle of attack are nose-up. The renderer maps this body frame into the internal Three.js scene, whose displayed vertical direction is up. Named meshes include the fuselage, cowling, canopy, left/right wings, ailerons, horizontal tail, elevators, vertical tail, rudder, propeller, and landing gear. A hidden CG marker is retained in the Blender source for later instructor visualization work.
 
 This structure lets a future instructor-core lesson animate or highlight a named part while keeping student modules data-only. For example, a control lesson may map a student-calculated elevator angle to `Elevator_Left` and `Elevator_Right`; that lesson must be planned separately and must not rewrite student physics.
 

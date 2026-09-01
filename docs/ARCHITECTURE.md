@@ -76,7 +76,7 @@ Version 1–3 modules continue to receive `analyze(aircraft)` and remain analysi
 
 ## Runtime and evidence
 
-The runtime uses SI units, the `+x` forward, `+y` right-wing, `+z` up frame, and deterministic fourth-order Runge–Kutta integration at `0.02 s`. The supplied pitch kernel converts a body-axis pitch moment to angular acceleration using the canonical pitch inertia. Student modules provide loads or complete reduced-order derivatives.
+The runtime uses SI units, the standard right-handed aircraft body frame (`+x` forward, `+y` right wing, `+z` down), and deterministic fourth-order Runge–Kutta integration at `0.02 s`. Positive pitch and angle of attack are nose-up. The supplied pitch kernel converts a body-axis pitch moment to angular acceleration using the canonical pitch inertia. Student modules provide loads or complete reduced-order derivatives.
 
 Run state is in memory. Refreshing the page restores lesson defaults; Git and GitHub Pages persist and publish student code. The report and exports must therefore be generated before refresh.
 

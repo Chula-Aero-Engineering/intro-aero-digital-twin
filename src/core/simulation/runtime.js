@@ -4,6 +4,31 @@ import { rk4Step } from "./integrator.js";
 export const FIXED_STEP_S = 0.02;
 const ZERO_VECTOR = Object.freeze({ x: 0, y: 0, z: 0 });
 
+export function resolvePitchRamp(scenario = {}, aircraft = {}) {
+  const ramp = scenario.disturbance?.pitchRamp;
+  if (ramp == null) return null;
+  if (typeof ramp !== "object") throw new TypeError("Pitch ramp configuration must be an object.");
+  const durationS = ramp.durationS;
+  if (!Number.isFinite(durationS) || durationS <= 0) throw new TypeError("Pitch ramp duration must be positive.");
+  const targetDeg = Number.isFinite(ramp.targetDeg)
+    ? ramp.targetDeg
+    : aircraft[ramp.targetDegAircraftKey];
+  if (!Number.isFinite(targetDeg)) throw new TypeError("Pitch ramp needs a finite target angle in degrees.");
+  return { durationS, targetRad: targetDeg * Math.PI / 180, label: ramp.label || "Disturbance released" };
+}
+
+export function prescribedPitchState(state, timeS, scenario = {}, aircraft = {}) {
+  const ramp = resolvePitchRamp(scenario, aircraft);
+  if (!ramp || timeS > ramp.durationS) return null;
+  const initialPitchRad = scenario.initialState?.pitchRad ?? 0;
+  const progress = Math.min(Math.max(timeS / ramp.durationS, 0), 1);
+  const angleFraction = 0.5 * (1 - Math.cos(Math.PI * progress));
+  const pitchRad = initialPitchRad + (ramp.targetRad - initialPitchRad) * angleFraction;
+  const pitchRateRadS = (ramp.targetRad - initialPitchRad)
+    * 0.5 * Math.PI / ramp.durationS * Math.sin(Math.PI * progress);
+  return { ...state, pitchRad, pitchRateRadS };
+}
+
 function addVector(target, candidate, label) {
   if (candidate == null) return target;
   const vector = { x: candidate.x ?? 0, y: candidate.y ?? 0, z: candidate.z ?? 0 };
@@ -95,7 +120,11 @@ export function createSimulationSession({ entries = [], aircraft, scenario = {} 
   };
   const durationS = Number.isFinite(scenario.durationS) ? scenario.durationS : aircraft.simulationDurationS;
   if (!Number.isFinite(durationS) || durationS <= 0) throw new TypeError("Simulation duration must be positive.");
-  const session = { timeS: 0, durationS, state: initialState, history: [], status: "paused", error: null };
+  const pitchRamp = resolvePitchRamp(scenario, aircraft);
+  if (pitchRamp && pitchRamp.durationS >= durationS) throw new TypeError("Pitch ramp must end before the simulation duration.");
+  const plotStateKeys = Array.isArray(scenario.plotStateKeys) ? scenario.plotStateKeys.map(String) : null;
+  const events = pitchRamp ? [{ timeS: pitchRamp.durationS, label: pitchRamp.label }] : [];
+  const session = { timeS: 0, durationS, state: initialState, history: [], events, plotStateKeys, status: "paused", error: null };
   const evaluation = evaluateModels(entries, aircraft, initialState, 0, scenario);
   session.history.push(sample(session, evaluation));
   return session;
@@ -105,8 +134,19 @@ export function advanceSimulationSession(session, { entries = [], aircraft, scen
   if (session.timeS >= session.durationS) return { ...session, status: "complete" };
   const actualStep = Math.min(stepS, session.durationS - session.timeS);
   const derivative = (state, timeS) => evaluateModels(entries, aircraft, state, timeS, scenario).derivatives;
-  const state = rk4Step(derivative, session.state, session.timeS, actualStep);
-  const next = { ...session, timeS: session.timeS + actualStep, state, status: "paused", error: null };
+  const nextTimeS = session.timeS + actualStep;
+  const ramp = resolvePitchRamp(scenario, aircraft);
+  let state;
+  if (ramp && session.timeS < ramp.durationS) {
+    const prescribedEndS = Math.min(nextTimeS, ramp.durationS);
+    state = prescribedPitchState(session.state, prescribedEndS, scenario, aircraft);
+    if (nextTimeS > ramp.durationS) {
+      state = rk4Step(derivative, state, ramp.durationS, nextTimeS - ramp.durationS);
+    }
+  } else {
+    state = rk4Step(derivative, session.state, session.timeS, actualStep);
+  }
+  const next = { ...session, timeS: nextTimeS, state, status: "paused", error: null };
   const evaluation = evaluateModels(entries, aircraft, state, next.timeS, scenario);
   next.history = [...session.history, sample(next, evaluation)];
   if (next.timeS >= next.durationS) next.status = "complete";

@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { normalizeScene } from "./visualizationContract.js";
+import { bodyAttitudeToScene, bodyVectorToScene } from "./aircraftFrame.js";
 
 function disposeObject(object) {
   object.traverse((child) => {
@@ -56,17 +57,22 @@ function overlayGroup(scene, scale) {
     const color = new THREE.Color(overlay.color || "#dce9ad");
     if (["point", "marker"].includes(overlay.type)) {
       const point = new THREE.Mesh(new THREE.SphereGeometry(scale * 0.035, 16, 12), new THREE.MeshBasicMaterial({ color }));
-      point.position.set(overlay.position.x, overlay.position.y, overlay.position.z);
+      const position = bodyVectorToScene(overlay.position);
+      point.position.set(position.x, position.y, position.z);
       group.add(point);
     } else if (overlay.type === "arrow") {
-      const origin = new THREE.Vector3(overlay.origin.x, overlay.origin.y, overlay.origin.z);
-      const vector = new THREE.Vector3(overlay.vector.x, overlay.vector.y, overlay.vector.z);
+      const mappedOrigin = bodyVectorToScene(overlay.origin);
+      const mappedVector = bodyVectorToScene(overlay.vector);
+      const origin = new THREE.Vector3(mappedOrigin.x, mappedOrigin.y, mappedOrigin.z);
+      const vector = new THREE.Vector3(mappedVector.x, mappedVector.y, mappedVector.z);
       const length = vector.length();
       if (length > 0) group.add(new THREE.ArrowHelper(vector.normalize(), origin, length, color, Math.min(length * 0.25, scale * 0.14), Math.min(length * 0.12, scale * 0.07)));
     } else {
+      const start = bodyVectorToScene(overlay.start);
+      const end = bodyVectorToScene(overlay.end);
       const geometry = new THREE.BufferGeometry().setFromPoints([
-        new THREE.Vector3(overlay.start.x, overlay.start.y, overlay.start.z),
-        new THREE.Vector3(overlay.end.x, overlay.end.y, overlay.end.z),
+        new THREE.Vector3(start.x, start.y, start.z),
+        new THREE.Vector3(end.x, end.y, end.z),
       ]);
       group.add(new THREE.Line(geometry, new THREE.LineBasicMaterial({ color })));
     }
@@ -167,7 +173,8 @@ export default function AircraftViewport({ aircraft, scene, attitude }) {
     const render = () => {
       if (visible) {
         const current = attitudeRef.current || {};
-        aircraftRoot.rotation.set(current.rollRad || 0, current.pitchRad || 0, current.yawRad || 0);
+        const sceneAttitude = bodyAttitudeToScene(current);
+        aircraftRoot.rotation.set(sceneAttitude.rollRad, sceneAttitude.pitchRad, sceneAttitude.yawRad);
         controls.update();
         renderer.render(threeScene, camera);
       }

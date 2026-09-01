@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { rk4Step } from "../../src/core/simulation/integrator.js";
-import { createSimulationSession, runSimulation } from "../../src/core/simulation/runtime.js";
+import { createSimulationSession, prescribedPitchState, runSimulation } from "../../src/core/simulation/runtime.js";
+import { simulationPlot } from "../../src/core/simulation/SimulationPanel.jsx";
 
 const aircraft = { pitchInertiaKgM2: 2, pitchRateRadS: 0, rollRateRadS: 0, yawRateRadS: 0, bankAngleDeg: 0, simulationDurationS: 1 };
 
@@ -44,5 +45,44 @@ describe("topic-neutral simulation runtime", () => {
     expect(session.durationS).toBe(2);
     expect(session.history).toHaveLength(1);
     expect(session.state.pitchRad).toBe(0.2);
+  });
+
+  it("prescribes a smooth pitch disturbance before releasing the physics response", () => {
+    const scenario = {
+      durationS: 1,
+      initialState: { pitchRad: 0, pitchRateRadS: 0 },
+      disturbance: { pitchRamp: { targetDeg: -4, durationS: 0.2, label: "Released" } },
+      plotStateKeys: ["pitchRad"],
+    };
+    const midpoint = prescribedPitchState({ pitchRad: 0, pitchRateRadS: 0 }, 0.1, scenario, aircraft);
+    expect(midpoint.pitchRad * 180 / Math.PI).toBeCloseTo(-2, 10);
+    const result = runSimulation({ entries: [], aircraft, scenario });
+    const release = result.history.find(({ timeS }) => timeS === 0.2);
+    expect(release.pitchRad * 180 / Math.PI).toBeCloseTo(-4, 10);
+    expect(release.pitchRateRadS).toBeCloseTo(0, 10);
+    expect(result.events).toEqual([{ timeS: 0.2, label: "Released" }]);
+    expect(result.plotStateKeys).toEqual(["pitchRad"]);
+  });
+
+  it("rejects a pitch ramp that leaves no time for free response", () => {
+    expect(() => createSimulationSession({
+      entries: [],
+      aircraft,
+      scenario: { durationS: 0.2, disturbance: { pitchRamp: { targetDeg: 4, durationS: 0.2 } } },
+    })).toThrow();
+  });
+
+  it("plots only requested states and marks disturbance release", () => {
+    const plot = simulationPlot({
+      timeS: 0.2,
+      plotStateKeys: ["pitchRad"],
+      events: [{ timeS: 0.1, label: "Disturbance released" }],
+      history: [
+        { timeS: 0, pitchRad: 0, rollRad: 0, yawRad: 0 },
+        { timeS: 0.2, pitchRad: 0.1, rollRad: 0, yawRad: 0 },
+      ],
+    });
+    expect(plot.series.map(({ label }) => label)).toEqual(["Pitch angle"]);
+    expect(plot.referenceLines).toEqual([{ axis: "x", value: 0.1, label: "Disturbance released" }]);
   });
 });

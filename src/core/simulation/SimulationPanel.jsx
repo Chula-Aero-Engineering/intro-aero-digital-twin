@@ -12,17 +12,19 @@ function createSafeSession(entries, aircraft, scenario) {
 
 export function simulationPlot(session) {
   if (!session?.history?.length) return null;
+  const requestedKeys = Array.isArray(session.plotStateKeys) ? new Set(session.plotStateKeys) : null;
   const stateSeries = [
     ["Pitch angle", "pitchRad", "#ff5a36"],
     ["Roll angle", "rollRad", "#164f45"],
     ["Yaw angle", "yawRad", "#6886c5"],
-  ].filter(([, key]) => session.history.some((sample) => Number.isFinite(sample[key])));
+  ].filter(([, key]) => (!requestedKeys || requestedKeys.has(key)) && session.history.some((sample) => Number.isFinite(sample[key])));
   return {
     id: "simulation-attitude-history",
     title: "Attitude response history",
     xLabel: "Time (s)",
     yLabel: "Angle (deg)",
     currentX: session.timeS,
+    referenceLines: (session.events || []).map(({ timeS, label }) => ({ axis: "x", value: timeS, label })),
     series: stateSeries.map(([label, key, color]) => ({
       label,
       color,
@@ -41,6 +43,7 @@ export default function SimulationPanel({ activeModule, registry, aircraft, onSe
     initialState: activeModule?.feature?.simulation?.initialState,
     controls: activeModule?.feature?.simulation?.controls,
     disturbance: activeModule?.feature?.simulation?.disturbance,
+    plotStateKeys: activeModule?.feature?.simulation?.plotStateKeys,
   }), [activeModule, aircraft.simulationDurationS]);
   const runnable = Boolean(activeModule?.runtimeReady && entries.length > 0);
   const [session, setSession] = useState(() => createSafeSession(entries, aircraft, scenario));

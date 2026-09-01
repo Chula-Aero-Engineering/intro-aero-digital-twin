@@ -227,7 +227,8 @@ export const feature = {
     durationS: 12,
     initialState: { pitchRad: 0, pitchRateRadS: 0 },
     controls: {},
-    disturbance: {}
+    disturbance: {},
+    plotStateKeys: ["pitchRad"]
   },
 
   analyze(aircraft, capabilityContext) {
@@ -324,12 +325,12 @@ Contract rules:
 - `decision.status` is `"pass"`, `"caution"`, or `"neutral"`.
 - Include `plots: []` when Section 10 says no plot. Plot points must be calculated from the physics functions, not typed as unexplained display values.
 - Include `regions: []` and `referenceLines: []` when no design constraints are plotted. Every displayed limit must come from the completed specification.
-- Include `scene: null` when Section 10 says no 3D overlay. Supported overlays are data-only `point`, `marker`, `arrow`, `line`, and `moment-arm` objects. Coordinates use the aircraft frame: +x forward, +y right wing, +z up.
+- Include `scene: null` when Section 10 says no 3D overlay. Supported overlays are data-only `point`, `marker`, `arrow`, `line`, and `moment-arm` objects. Coordinates use the standard aircraft body frame: +x forward, +y right wing, +z down.
 - Do not include a component property or import React/shared UI components.
 - Export one `model` object from the feature file. A `derived` model returns `values`; a `load` model returns body-axis `forcesBodyN`, `momentsBodyNm`, and optional `values`; a `state-model` returns `derivatives` keyed by the declared reduced-order states.
 - `model.evaluate(runtimeContext)` receives `aircraft`, `state`, `timeS`, `controls`, `disturbance`, `derived`, `capabilities`, `forcesBodyN`, and `momentsBodyNm`. It must return finite data and must not mutate the context.
 - Use `simulation.display: "response"` when the lesson needs run controls, aircraft animation, and response histories. Use `"analysis-only"` when a Version 4 model must provide a capability but a time response would exceed or confuse the lesson's stated scope.
-- Use the aircraft frame `+x` forward, `+y` right wing, and `+z` up. The core owns fixed-step RK4 integration, animation, run controls, logging, and evidence export.
+- Use the standard right-handed aircraft body frame: `+x` forward, `+y` right wing, and `+z` down. Positive pitch and positive angle of attack are nose-up. The core owns fixed-step RK4 integration, prescribed disturbance phases, animation, run controls, logging, and evidence export.
 
 Mode rules:
 
