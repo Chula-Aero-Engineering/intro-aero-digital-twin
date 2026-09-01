@@ -123,7 +123,7 @@ export default function AircraftViewport({ aircraft, scene, attitude }) {
         }
         const model = gltf.scene;
         model.name = "Course_Aircraft_Model";
-        // Blender exports to glTF's Y-up frame; return it to the course +z-up frame.
+        // Blender exports to glTF's Y-up frame; return it to the internal scene's +z-up frame.
         model.rotation.x = Math.PI / 2;
         const spanScale = Math.max(aircraft.wingSpanM || 1.6, 0.2) / 1.6;
         const chordScale = Math.max(aircraft.meanChordM || 0.32, 0.08) / 0.32;
