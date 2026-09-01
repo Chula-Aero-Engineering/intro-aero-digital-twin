@@ -58,4 +58,6 @@ If compatibility cannot be maintained, resolve the required student migration ex
 
 See [`DEVICE-WORKFLOWS.md`](./DEVICE-WORKFLOWS.md) for the matched laptop, Codespaces/iPad, and github.dev/Pages routes.
 
+Distribute the course through the public organization repository and have students create personal forks. Publish core updates to its `main` branch. A template-generated repository is intentionally not used because it would not retain the Git relationship students need for later upstream synchronization.
+
 The optional stability dry run is documented in [`STABILITY-UNIT-RUNBOOK.md`](./STABILITY-UNIT-RUNBOOK.md). Its five entries are planned slots in the module rail, not prebuilt physics. When a student adds a matching feature ID, automatic discovery replaces the placeholder with the verified analysis while retaining the shared 3D aircraft and renderer.

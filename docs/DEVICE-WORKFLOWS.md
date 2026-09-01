@@ -2,9 +2,15 @@
 
 Every student edits the same three kinds of student-owned files. The device changes the editor, not the engineering process.
 
+## First-time course setup
+
+1. Open `https://github.com/Chula-Aero-Engineering/intro-aero-digital-twin`.
+2. Select **Fork** and create the fork under your personal GitHub account.
+3. Work only in your fork. Do not create a repository from a template: a fork retains the connection needed to receive instructor updates.
+
 ## Laptop or desktop
 
-1. Clone the student repository and open it in VS Code or another editor.
+1. Clone your fork and open it in VS Code or another editor.
 2. Run `npm ci` once.
 3. Add the three files returned by ChatGPT.
 4. Run `npm test` and `npm run dev`.
@@ -26,7 +32,21 @@ Use iPad split view for ChatGPT and Codespaces if helpful. Stop the Codespace af
 
 Press `.` while viewing the repository on GitHub, or replace `github.com` with `github.dev`. This editor can change, commit, and push files but cannot run Node or the development server. After a push to `main`, GitHub Actions runs the tests and build, then publishes the verified app through GitHub Pages.
 
-The instructor must enable **Settings → Pages → Source: GitHub Actions** once in each repository or template-derived repository. The repository name is detected during the build, so student repositories do not need a custom Vite path.
+The student must enable **Settings → Pages → Source: GitHub Actions** once in their fork. The repository name is detected during the build, so student repositories do not need a custom Vite path.
+
+## Receiving an instructor update
+
+Commit your student work before syncing.
+
+On GitHub, open your fork and select **Sync fork → Update branch**. Then pull the updated `main` branch in your local clone or Codespace. Laptop users may instead add the course repository as `upstream` once and merge its updates:
+
+```bash
+git remote add upstream https://github.com/Chula-Aero-Engineering/intro-aero-digital-twin.git
+git fetch upstream
+git merge upstream/main
+```
+
+Instructor updates are constrained to core-owned paths. Student physics, feature definitions, tests, and specifications remain in separate protected paths, so normal updates should not overwrite them.
 
 ## What is common to every device
 
@@ -42,4 +62,4 @@ tests + application verify the model
 commit and push the growing aircraft
 ```
 
-GitHub Classroom was retired on August 28, 2026. A course organization plus a template repository, one repository per student, Codespaces, Actions, and Pages provides the intended semester-long workflow without disposable weekly repositories.
+GitHub Classroom was retired on August 28, 2026. A public organization-owned upstream repository plus personal student forks, Codespaces, Actions, and Pages provides the intended semester-long workflow without disposable weekly repositories.

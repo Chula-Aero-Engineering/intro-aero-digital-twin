@@ -37,6 +37,10 @@ npm test
 
 Create a production build with `npm run build`.
 
+## Course distribution
+
+The canonical public repository is owned by the `Chula-Aero-Engineering` organization. Students fork it into their personal GitHub accounts, then work locally or in Codespaces. Forking preserves the upstream relationship required to receive instructor core updates throughout the semester. See [`docs/DEVICE-WORKFLOWS.md`](docs/DEVICE-WORKFLOWS.md) for first-time setup, syncing, iPad development, and Pages publishing.
+
 ## Repository map
 
 - `src/core` — instructor-owned application shell, aircraft state, rendering, styling, discovery, and demonstrations.
