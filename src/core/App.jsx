@@ -1,6 +1,4 @@
 import { useState } from "react";
-import AircraftOverview from "./components/AircraftOverview.jsx";
-import ParameterPanel from "./components/ParameterPanel.jsx";
 import ModuleWorkspace from "./components/ModuleWorkspace.jsx";
 import { featureEntries, features } from "./features/index.js";
 import { getFeatureInputKeys } from "./features/featureContract.js";
@@ -25,38 +23,35 @@ export default function App() {
   }
 
   return (
-    <>
-      <header className="hero">
+    <div className="app-shell">
+      <header className="app-header">
         <nav aria-label="Course tool identity">
           <span className="brand-mark">AERO / 01</span>
           <span>AI-Assisted Engineering Tool</span>
         </nav>
-        <div className="hero-content">
-          <div>
-            <p className="eyebrow">Introduction to aerospace engineering</p>
-            <h1>Turn physics into a<br /><em>verified</em> design tool.</h1>
-          </div>
-          <p className="hero-summary">Understand the model. Specify its behavior. Ask AI for bounded code. Verify the result. Then make an engineering decision.</p>
+        <div className="app-title">
+          <p>Introduction to aerospace engineering</p>
+          <h1>Verified aircraft workspace</h1>
         </div>
-        <div className="workflow" aria-label="Course workflow">
-          {["Understand", "Specify", "Verify", "Implement", "Test", "Decide"].map((step, index) => (
-            <span key={step}><b>{String(index + 1).padStart(2, "0")}</b>{step}</span>
-          ))}
-        </div>
+        <p className="app-motto">Understand · Specify · Verify · Implement · Test · Decide</p>
       </header>
 
       <main>
-        <div className="section-rule"><span>AIRCRAFT</span><p>The same shared aircraft persists while each module reveals a different engineering relationship.</p></div>
-        <ModuleWorkspace featureEntries={featureEntries} registry={capabilityRegistry} aircraft={aircraft} selectedId={selectedFeatureId} onSelect={setSelectedFeatureId} />
-        <div className="section-rule"><span>INPUTS</span><p>Only the current module's declared inputs are shown; legacy modules continue to receive the complete aircraft state.</p></div>
-        <ParameterPanel aircraft={aircraft} onChange={updateParameter} inputKeys={selectedInputKeys} />
-        <AircraftOverview aircraft={aircraft} parameterKeys={selectedInputKeys} />
+        <ModuleWorkspace
+          featureEntries={featureEntries}
+          registry={capabilityRegistry}
+          aircraft={aircraft}
+          inputKeys={selectedInputKeys}
+          selectedId={selectedFeatureId}
+          onAircraftChange={updateParameter}
+          onSelect={setSelectedFeatureId}
+        />
       </main>
 
       <footer>
         <p>Models inform decisions. Verification earns confidence.</p>
         <span>SI units throughout</span>
       </footer>
-    </>
+    </div>
   );
 }

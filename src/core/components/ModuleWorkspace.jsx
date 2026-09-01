@@ -9,7 +9,18 @@ import { capabilityContext } from "../simulation/runtime.js";
 import SimulationPanel, { simulationPlot } from "../simulation/SimulationPanel.jsx";
 import { showsSimulationResponse, simulationDisplayMode } from "../simulation/displayMode.js";
 import EvidenceReport from "./EvidenceReport.jsx";
+import AircraftOverview from "./AircraftOverview.jsx";
+import ParameterPanel from "./ParameterPanel.jsx";
 import { modelsForFeature } from "../capabilities/capabilityContract.js";
+
+const workspacePanels = [
+  { id: "aircraft", label: "Aircraft" },
+  { id: "inputs", label: "Inputs" },
+  { id: "outputs", label: "Outputs" },
+  { id: "plots", label: "Plots" },
+  { id: "response", label: "Response" },
+  { id: "evidence", label: "Evidence" },
+];
 
 function statusLabel(module) {
   if (module.status === "installed" && module.runtimeReady && simulationDisplayMode(module.feature) === "analysis-only") return "Installed · capability ready";
@@ -20,7 +31,7 @@ function statusLabel(module) {
   return `Locked · ${missing} prerequisite${missing === 1 ? "" : "s"}`;
 }
 
-export default function ModuleWorkspace({ featureEntries, registry, aircraft, selectedId, onSelect }) {
+export default function ModuleWorkspace({ featureEntries, registry, aircraft, inputKeys, selectedId, onAircraftChange, onSelect }) {
   const curriculum = useMemo(() => buildCurriculum(featureEntries, registry), [featureEntries, registry]);
   const selectedModule = curriculum.flatMap((topic) => topic.modules).find((module) => module.feature.id === selectedId);
   const initialTopic = selectedModule?.feature.topicId || curriculum.find((topic) => topic.modules.length)?.id || curriculum[0]?.id;
@@ -46,13 +57,43 @@ export default function ModuleWorkspace({ featureEntries, registry, aircraft, se
     }
   }, [activeModule, activeFeature, aircraft, modelEntries]);
   const [session, setSession] = useState(null);
+  const [selectedPanelId, setSelectedPanelId] = useState("aircraft");
   const onSessionChange = useCallback((next) => setSession(next), []);
   const livePlot = showSimulation ? simulationPlot(session) : null;
+  const panelAvailability = {
+    aircraft: Boolean(activeModule),
+    inputs: Boolean(activeModule),
+    outputs: Boolean(activeModule),
+    plots: Boolean(analysis?.plots?.length),
+    response: Boolean(activeModule?.status === "installed" && showSimulation),
+    evidence: Boolean(activeModule?.entry),
+  };
+  const activePanelId = panelAvailability[selectedPanelId]
+    ? selectedPanelId
+    : workspacePanels.find(({ id }) => panelAvailability[id])?.id;
 
   function chooseTopic(topic) {
     setSelectedTopicId(topic.id);
     const first = topic.modules[0];
     if (first) onSelect(first.feature.id);
+  }
+
+  function chooseWorkspacePanel(panelId) {
+    if (panelAvailability[panelId]) setSelectedPanelId(panelId);
+  }
+
+  function moveWorkspaceTab(event, currentIndex) {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    event.preventDefault();
+    const availablePanels = workspacePanels.filter(({ id }) => panelAvailability[id]);
+    const currentAvailableIndex = availablePanels.findIndex(({ id }) => id === workspacePanels[currentIndex].id);
+    let nextIndex = currentAvailableIndex;
+    if (event.key === "Home") nextIndex = 0;
+    else if (event.key === "End") nextIndex = availablePanels.length - 1;
+    else nextIndex = (currentAvailableIndex + (event.key === "ArrowRight" ? 1 : -1) + availablePanels.length) % availablePanels.length;
+    const nextPanel = availablePanels[nextIndex];
+    chooseWorkspacePanel(nextPanel.id);
+    document.getElementById(`workspace-tab-${nextPanel.id}`)?.focus();
   }
 
   if (!activeTopic) return <p>No course topics are registered.</p>;
@@ -96,27 +137,68 @@ export default function ModuleWorkspace({ featureEntries, registry, aircraft, se
         ) : <p className="empty-topic">No public module slots have been released for this topic yet.</p>}
       </aside>
 
-      <div className="module-stage" role="tabpanel">
+      <div className="module-stage">
         {activeModule ? (
           <>
-            <AircraftViewport aircraft={aircraft} scene={analysis?.scene} attitude={showSimulation ? session?.state : null} />
-            {activeModule.status === "installed" && showSimulation && <SimulationPanel activeModule={activeModule} registry={registry} aircraft={aircraft} onSessionChange={onSessionChange} />}
-            {activeModule.entry ? (
-              <>
-                {(analysis?.plots || []).map((plot) => <EngineeringPlot key={plot.id || plot.title} plot={plot} />)}
-                {livePlot && <EngineeringPlot plot={livePlot} />}
+            <header className="workspace-toolbar">
+              <div>
+                <p className="eyebrow">{activeTopic.shortTitle} · {activeMode?.title}</p>
+                <h2>{activeFeature.title}</h2>
+              </div>
+              <div className="workspace-tabs" role="tablist" aria-label="Workspace panels">
+                {workspacePanels.map((panel, index) => (
+                  <button
+                    id={`workspace-tab-${panel.id}`}
+                    key={panel.id}
+                    type="button"
+                    role="tab"
+                    aria-controls={`workspace-panel-${panel.id}`}
+                    aria-selected={panel.id === activePanelId}
+                    className={panel.id === activePanelId ? "active" : ""}
+                    disabled={!panelAvailability[panel.id]}
+                    tabIndex={panel.id === activePanelId ? 0 : -1}
+                    onClick={() => chooseWorkspacePanel(panel.id)}
+                    onKeyDown={(event) => moveWorkspaceTab(event, index)}
+                  >{panel.label}</button>
+                ))}
+              </div>
+            </header>
+
+            <div id="workspace-panel-aircraft" className="workspace-panel workspace-panel-aircraft" role="tabpanel" aria-labelledby="workspace-tab-aircraft" hidden={activePanelId !== "aircraft"}>
+              <AircraftViewport aircraft={aircraft} scene={analysis?.scene} attitude={showSimulation ? session?.state : null} />
+              <AircraftOverview aircraft={aircraft} parameterKeys={inputKeys} />
+            </div>
+
+            <div id="workspace-panel-inputs" className="workspace-panel" role="tabpanel" aria-labelledby="workspace-tab-inputs" hidden={activePanelId !== "inputs"}>
+              <ParameterPanel aircraft={aircraft} onChange={onAircraftChange} inputKeys={inputKeys} />
+            </div>
+
+            <div id="workspace-panel-outputs" className="workspace-panel" role="tabpanel" aria-labelledby="workspace-tab-outputs" hidden={activePanelId !== "outputs"}>
+              {activeModule.entry ? (
                 <FeatureCard feature={activeFeature} aircraft={aircraft} analysis={analysis} sequence={activeModule.descriptor?.stage || visibleModules.findIndex((module) => module.feature.id === activeFeature.id) + 1} />
-                <EvidenceReport aircraft={aircraft} activeModule={activeModule} registry={registry} analysis={analysis} session={showSimulation ? session : null} />
-              </>
-            ) : (
-              <article className={`planned-module planned-${activeModule.status}`}>
-                <p className="eyebrow">{activeModule.status === "ready" ? "Prerequisites satisfied" : "Capability locked"}</p>
-                <h2>{activeFeature.title}</h2><p>{activeFeature.description}</p>
-                <code>src/student/features/{activeFeature.id}.feature.js</code>
-                {activeModule.requirements.length > 0 && <div className="prerequisite-list"><strong>Required capabilities</strong><ul>{activeModule.requirements.map((requirement) => <li key={requirement.id} className={requirement.satisfied ? "satisfied" : "missing"}>{requirement.satisfied ? "✓" : "○"} {requirement.id} v{requirement.version}</li>)}</ul></div>}
-                <p>The public shell contains no solution equations or reference output. Build the normal three student-owned files during the lesson; discovery replaces this slot automatically.</p>
-              </article>
-            )}
+              ) : (
+                <article className={`planned-module planned-${activeModule.status}`}>
+                  <p className="eyebrow">{activeModule.status === "ready" ? "Prerequisites satisfied" : "Capability locked"}</p>
+                  <h2>{activeFeature.title}</h2><p>{activeFeature.description}</p>
+                  <code>src/student/features/{activeFeature.id}.feature.js</code>
+                  {activeModule.requirements.length > 0 && <div className="prerequisite-list"><strong>Required capabilities</strong><ul>{activeModule.requirements.map((requirement) => <li key={requirement.id} className={requirement.satisfied ? "satisfied" : "missing"}>{requirement.satisfied ? "✓" : "○"} {requirement.id} v{requirement.version}</li>)}</ul></div>}
+                  <p>The public shell contains no solution equations or reference output. Build the normal three student-owned files during the lesson; discovery replaces this slot automatically.</p>
+                </article>
+              )}
+            </div>
+
+            {panelAvailability.plots && <div id="workspace-panel-plots" className="workspace-panel workspace-panel-plots" role="tabpanel" aria-labelledby="workspace-tab-plots" hidden={activePanelId !== "plots"}>
+              {analysis.plots.map((plot) => <EngineeringPlot key={plot.id || plot.title} plot={plot} />)}
+            </div>}
+
+            {panelAvailability.response && <div id="workspace-panel-response" className="workspace-panel workspace-panel-response" role="tabpanel" aria-labelledby="workspace-tab-response" hidden={activePanelId !== "response"}>
+              <SimulationPanel activeModule={activeModule} registry={registry} aircraft={aircraft} onSessionChange={onSessionChange} />
+              {livePlot ? <EngineeringPlot plot={livePlot} /> : <div className="workspace-empty"><p className="eyebrow">Response history</p><h3>Run or step the model to create a plot.</h3><p>The aircraft view uses the same state history, so the motion and graph stay synchronized.</p></div>}
+            </div>}
+
+            {panelAvailability.evidence && <div id="workspace-panel-evidence" className="workspace-panel" role="tabpanel" aria-labelledby="workspace-tab-evidence" hidden={activePanelId !== "evidence"}>
+              <EvidenceReport aircraft={aircraft} activeModule={activeModule} registry={registry} analysis={analysis} session={showSimulation ? session : null} />
+            </div>}
           </>
         ) : (
           <article className="planned-module empty-stage"><p className="eyebrow">Topic space reserved</p><h2>{activeTopic.title}</h2><p>{activeTopic.description}</p><p>Future modules can join the same aircraft and capability graph without changing the application architecture.</p></article>
