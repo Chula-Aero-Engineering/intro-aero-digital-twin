@@ -13,10 +13,14 @@ function approximatelyEqual(actual, expected, tolerance = 1e-9) {
 }
 
 export const feature = {
-  contractVersion: 1,
+  contractVersion: 3,
   id: "lift",
   title: "Lift analysis",
   description: "Compare modeled lift with aircraft weight at the current flight condition.",
+  category: "Forces",
+  learningMode: "concept",
+  topicId: "lift",
+  inputKeys: ["massKg", "payloadKg", "speedMps", "densityKgM3", "wingAreaM2", "cl"],
 
   analyze(aircraft) {
     const inputs = {
@@ -52,6 +56,8 @@ export const feature = {
           : `Available lift is below the ${weightN.toFixed(2)} N required at this modeled condition.`,
         status: sufficient ? "pass" : "caution",
       },
+      plots: [],
+      scene: null,
     };
   },
 };

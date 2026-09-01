@@ -4,6 +4,8 @@ function rectangularPlanform(spanM, chordM) {
 
 export const feature = {
   contractVersion: 2,
+  learningMode: "aircraft",
+  topicId: "wing-geometry",
   id: "geometry-visualization",
   title: "Wing geometry",
   category: "Geometry · Core demonstration",

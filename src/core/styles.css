@@ -47,6 +47,19 @@ input:focus { outline: 3px solid #ffb39f; border-color: var(--accent); }
 .module-rail { position: sticky; top: 18px; min-width: 0; padding: 24px; color: white; background: var(--ink); }
 .module-rail h2 { margin: 0; font-family: Georgia, serif; font-size: 2rem; font-weight: 400; }
 .module-rail-intro { margin: 12px 0 24px; color: #c4ccc7; font-size: .85rem; line-height: 1.5; }
+.learning-mode-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin: 22px 0 14px; }
+.learning-mode-tabs button { min-height: 62px; padding: 8px 5px; border: 1px solid #53605c; color: #e5e8e4; background: transparent; cursor: pointer; }
+.learning-mode-tabs button span, .learning-mode-tabs button strong { display: block; }
+.learning-mode-tabs button span { margin-bottom: 5px; color: var(--accent); font-size: .64rem; }
+.learning-mode-tabs button strong { font-size: .72rem; }
+.learning-mode-tabs button.active { border-color: var(--lime); color: var(--ink); background: var(--lime); }
+.learning-mode-tabs button.active span { color: var(--green); }
+.learning-mode-tabs button:disabled { cursor: not-allowed; opacity: .35; }
+.learning-mode-tabs button:focus-visible { outline: 3px solid var(--lime); outline-offset: 2px; }
+.mode-purpose { min-height: 124px; padding: 16px; border-left: 3px solid var(--accent); background: #23312e; }
+.mode-purpose strong, .mode-purpose span { display: block; }
+.mode-purpose strong { margin-bottom: 8px; color: var(--lime); font-family: Georgia, serif; font-size: 1.05rem; font-weight: 400; line-height: 1.25; }
+.mode-purpose span { color: #c4ccc7; font-size: .76rem; line-height: 1.45; }
 .module-tabs { display: grid; gap: 8px; }
 .module-tabs button { display: grid; grid-template-columns: 28px 1fr; min-height: 64px; padding: 12px; border: 1px solid #53605c; color: #e5e8e4; background: transparent; text-align: left; cursor: pointer; }
 .module-tabs button:hover, .module-tabs button:focus-visible { border-color: var(--lime); }
@@ -76,6 +89,9 @@ input:focus { outline: 3px solid #ffb39f; border-color: var(--accent); }
 .plot-grid { stroke: #d8ddd5; stroke-width: 1; }
 .plot-tick { fill: #65716b; font-size: 12px; }
 .plot-axis-label { fill: var(--ink); font-size: 13px; font-weight: 700; }
+.plot-region-label { fill: var(--green); font-size: 12px; font-weight: 800; }
+.plot-reference { stroke: var(--green); stroke-width: 2; stroke-dasharray: 8 6; }
+.plot-reference-label { fill: var(--green); font-size: 11px; font-weight: 800; }
 .module-stage > .feature-card { grid-column: 1 / -1; }
 .planned-module { grid-column: 1 / -1; padding: 32px; border: 1px dashed var(--green); background: #f1f4e5; }
 .planned-module h2 { margin: 0 0 12px; font-family: Georgia, serif; font-size: 2rem; font-weight: 400; }

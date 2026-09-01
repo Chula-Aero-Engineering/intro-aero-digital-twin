@@ -12,6 +12,8 @@ Learn the aerospace model before touching AI. Identify the governing equation, v
 
 Copy [`templates/FEATURE-SPEC.md`](../templates/FEATURE-SPEC.md) into `student-work/specs` and complete every section. Keep the feature narrow: one engineering question, one model, and a small number of outputs.
 
+Choose the assigned learning mode: Concept isolates the equation, Aircraft derives behavior from physical parameters, and Design evaluates requirements and constraints. The upload and three-file workflow is identical in all modes. See [`THREE-MODE-TEACHING.md`](./THREE-MODE-TEACHING.md).
+
 ## C. Verify Before Coding
 
 Perform at least one manual reference calculation. Define a numerical test, a test of expected physical behavior, and a boundary or sanity test before code exists.

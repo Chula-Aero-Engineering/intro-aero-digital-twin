@@ -38,7 +38,9 @@ src/core/data/aircraft.js
 
 ## Adding a feature
 
-A feature creates one physics file, one data-only `*.feature.js` definition, and one test file. `src/core/features/index.js` uses Vite's built-in discovery, so students do not edit the registry or `App.jsx`. Version 2 modules may also return plot series and simple point/arrow overlays. They still contain no rendering code.
+A feature creates one physics file, one data-only `*.feature.js` definition, and one test file. `src/core/features/index.js` uses Vite's built-in discovery, so students do not edit the registry or `App.jsx`. Version 2 and 3 modules may also return plot series and simple point/arrow overlays. They still contain no rendering code.
+
+Version 3 adds `learningMode` (`concept`, `aircraft`, or `design`) and `topicId`. Legacy modules default to Concept mode. The module rail filters capability by learning mode while retaining the same aircraft state. Plot data may include rectangular acceptable regions and requirement reference lines for Design mode; the SVG renderer owns their appearance.
 
 `src/core/features/FeatureCard.jsx` and the visualization components are instructor-owned. They validate and render every result, unit, verification case, decision, plot, overlay, error state, and responsive layout consistently. A missing `contractVersion` is interpreted as legacy Version 1, so older generated features continue to work. The optimized Blender source lives at `assets/blender/course-aircraft.blend`; the app loads its 209 KB GLB export from `public/models`. Major parts retain separate names for later instructor visualization work. A procedural aircraft remains as an immediate-loading and asset-failure fallback.
 

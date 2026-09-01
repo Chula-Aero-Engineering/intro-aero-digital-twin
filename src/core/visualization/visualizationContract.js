@@ -23,6 +23,16 @@ export function normalizePlot(plot) {
     xLabel: plot.xLabel || "x",
     yLabel: plot.yLabel || "y",
     series,
+    regions: (Array.isArray(plot.regions) ? plot.regions : [])
+      .filter((region) => [region?.xMin, region?.xMax, region?.yMin, region?.yMax].every(finite))
+      .map((region) => ({
+        ...region,
+        label: region.label || "Acceptable region",
+        color: region.color || "#dce9ad",
+      })),
+    referenceLines: (Array.isArray(plot.referenceLines) ? plot.referenceLines : [])
+      .filter((line) => ["x", "y"].includes(line?.axis) && finite(line?.value))
+      .map((line) => ({ ...line, label: line.label || "Requirement" })),
   };
 }
 

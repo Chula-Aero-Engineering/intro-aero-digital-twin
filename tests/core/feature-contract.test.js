@@ -18,6 +18,15 @@ describe("feature contract compatibility", () => {
     expect(resolveFeatureAnalysis({ contractVersion: 2, analyze: () => analysis }, aircraft)).toBe(analysis);
   });
 
+  it("accepts Version 3 learning-mode features", () => {
+    expect(resolveFeatureAnalysis({ contractVersion: 3, learningMode: "design", topicId: "stability", analyze: () => validAnalysis }, aircraft)).toBe(validAnalysis);
+  });
+
+  it("shows a contract failure when Version 3 mode metadata is missing", () => {
+    const analysis = resolveFeatureAnalysis({ contractVersion: 3, analyze: () => validAnalysis }, aircraft);
+    expect(analysis.verificationCases[0].passed).toBe(false);
+  });
+
   it("converts unsupported contracts to a visible failure instead of crashing", () => {
     const analysis = resolveFeatureAnalysis({ contractVersion: 99, analyze: () => validAnalysis }, aircraft);
     expect(analysis.verificationCases[0].passed).toBe(false);

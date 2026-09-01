@@ -2,6 +2,8 @@ import { calculateWeight } from "../physics/example.js";
 
 export const feature = {
   contractVersion: 1,
+  learningMode: "concept",
+  topicId: "forces",
   id: "weight-demo",
   title: "Weight demonstration",
   description: "A deliberately small example showing the separation between an engineering equation, structured results, verification, and interpretation.",

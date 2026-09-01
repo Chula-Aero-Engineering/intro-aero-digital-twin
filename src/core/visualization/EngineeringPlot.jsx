@@ -19,6 +19,13 @@ export default function EngineeringPlot({ plot }) {
   if (!normalized) return null;
 
   const points = normalized.series.flatMap((series) => series.points);
+  normalized.regions.forEach((region) => {
+    points.push({ x: region.xMin, y: region.yMin }, { x: region.xMax, y: region.yMax });
+  });
+  normalized.referenceLines.forEach((line) => {
+    if (line.axis === "x") points.push({ x: line.value, y: points[0]?.y ?? 0 });
+    else points.push({ x: points[0]?.x ?? 0, y: line.value });
+  });
   let xMin = Math.min(...points.map((point) => point.x));
   let xMax = Math.max(...points.map((point) => point.x));
   let yMin = Math.min(...points.map((point) => point.y));
@@ -45,6 +52,19 @@ export default function EngineeringPlot({ plot }) {
       <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} role="img" aria-labelledby={`${normalized.id}-title ${normalized.id}-desc`}>
         <title id={`${normalized.id}-title`}>{normalized.title}</title>
         <desc id={`${normalized.id}-desc`}>{normalized.yLabel} plotted against {normalized.xLabel}</desc>
+        {normalized.regions.map((region) => (
+          <g key={`${region.label}-${region.xMin}-${region.yMin}`}>
+            <rect
+              x={x(Math.min(region.xMin, region.xMax))}
+              y={y(Math.max(region.yMin, region.yMax))}
+              width={Math.abs(x(region.xMax) - x(region.xMin))}
+              height={Math.abs(y(region.yMax) - y(region.yMin))}
+              fill={region.color}
+              opacity="0.38"
+            />
+            <text className="plot-region-label" x={x((region.xMin + region.xMax) / 2)} y={y((region.yMin + region.yMax) / 2)} textAnchor="middle">{region.label}</text>
+          </g>
+        ))}
         {ticks(yMin, yMax).map((tick) => (
           <g key={`y-${tick}`}>
             <line className="plot-grid" x1={MARGIN.left} x2={WIDTH - MARGIN.right} y1={y(tick)} y2={y(tick)} />
@@ -59,6 +79,18 @@ export default function EngineeringPlot({ plot }) {
         ))}
         <text className="plot-axis-label" x={MARGIN.left + plotWidth / 2} y={HEIGHT - 12} textAnchor="middle">{normalized.xLabel}</text>
         <text className="plot-axis-label" transform={`translate(18 ${MARGIN.top + plotHeight / 2}) rotate(-90)`} textAnchor="middle">{normalized.yLabel}</text>
+        {normalized.referenceLines.map((line) => (
+          <g key={`${line.axis}-${line.value}-${line.label}`}>
+            <line
+              className="plot-reference"
+              x1={line.axis === "x" ? x(line.value) : MARGIN.left}
+              x2={line.axis === "x" ? x(line.value) : WIDTH - MARGIN.right}
+              y1={line.axis === "y" ? y(line.value) : MARGIN.top}
+              y2={line.axis === "y" ? y(line.value) : HEIGHT - MARGIN.bottom}
+            />
+            <text className="plot-reference-label" x={line.axis === "x" ? x(line.value) + 6 : WIDTH - MARGIN.right - 4} y={line.axis === "y" ? y(line.value) - 7 : MARGIN.top + 15} textAnchor={line.axis === "x" ? "start" : "end"}>{line.label}</text>
+          </g>
+        ))}
         {normalized.series.map((series) => (
           <g key={series.label}>
             <polyline fill="none" stroke={series.color} strokeWidth="4" strokeLinejoin="round" points={series.points.map((point) => `${x(point.x)},${y(point.y)}`).join(" ")} />

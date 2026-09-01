@@ -62,7 +62,9 @@ The canonical public repository is owned by the `Chula-Aero-Engineering` organiz
 4. Run `npm test` and `npm run dev`.
 5. Compare the result with the manual calculation, test expected behavior, locate the equation in code, and use the result to answer the original engineering question.
 
-The application automatically discovers every `src/student/features/*.feature.js` file and renders it through the shared module workspace. Version 2 features may provide numeric plot points and simple point/arrow overlays; the core owns Three.js, SVG plotting, JSX, CSS, and responsive behavior. Existing Version 1 features remain compatible. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) and [`examples/lift-example`](examples/lift-example).
+The application automatically discovers every `src/student/features/*.feature.js` file and renders it through the shared module workspace. Version 2 and 3 features may provide numeric plot points and simple point/arrow overlays; the core owns Three.js, SVG plotting, JSX, CSS, and responsive behavior. Existing Version 1 features remain compatible. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) and [`examples/lift-example`](examples/lift-example).
+
+Modules progress through three learning modes: **Concept** isolates mathematical behavior, **Aircraft** derives it from physical contributors, and **Design** evaluates requirements and feasible regions. Every mode uses the same one-specification, three-generated-file student workflow. See [`docs/THREE-MODE-TEACHING.md`](docs/THREE-MODE-TEACHING.md).
 
 Instructor changes use a clean `core/<lesson-slug>` branch and are checked with `npm run verify:core-boundary -- --base main`. Repository rules in [`AGENTS.md`](AGENTS.md) tell Codex to preserve student work automatically.
 

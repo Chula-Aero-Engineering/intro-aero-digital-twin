@@ -78,4 +78,12 @@ export const plannedFeatureSlots = lessonCatalog.slice(1).map((lesson) => ({
   category: "Stability unit · Planned student module",
   inputKeys: lesson.parameterKeys,
   planned: true,
+  learningMode: {
+    "disturbance-trim-response": "concept",
+    "longitudinal-static-stability": "concept",
+    "cg-loading-limits": "design",
+    "lateral-directional-dynamics": "concept",
+    "mission-loading-decision": "design",
+  }[lesson.id],
+  topicId: "stability",
 }));

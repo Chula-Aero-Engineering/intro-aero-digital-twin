@@ -45,8 +45,16 @@ function failedAnalysis(feature, error) {
 export function resolveFeatureAnalysis(feature, aircraft) {
   try {
     const contractVersion = feature.contractVersion ?? 1;
-    if (![1, 2].includes(contractVersion)) {
+    if (![1, 2, 3].includes(contractVersion)) {
       throw new TypeError(`Unsupported feature contract version: ${contractVersion}.`);
+    }
+    if (contractVersion === 3) {
+      if (!["concept", "aircraft", "design"].includes(feature.learningMode)) {
+        throw new TypeError("Version 3 features require learningMode: concept, aircraft, or design.");
+      }
+      if (typeof feature.topicId !== "string" || feature.topicId.trim() === "") {
+        throw new TypeError("Version 3 features require a non-empty topicId.");
+      }
     }
     if (typeof feature.analyze !== "function") {
       throw new TypeError("The feature must export an analyze(aircraft) function.");

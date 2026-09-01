@@ -1,5 +1,11 @@
 # Lift Availability
 
+## Learning Mode
+
+`concept`
+
+Topic ID: `lift`
+
 ## 1. Engineering Question
 
 Can the current wing produce enough lift to balance the aircraft weight at the selected flight condition?
@@ -76,10 +82,14 @@ The shared `aircraft` object provides `massKg`, `payloadKg`, `speedMps`, `densit
 
 ```javascript
 export const feature = {
-  contractVersion: 1,
+  contractVersion: 3,
   id: "lift",
   title: "Lift analysis",
   description: "Compare modeled lift with aircraft weight at the current flight condition.",
+  category: "Forces",
+  learningMode: "concept",
+  topicId: "lift",
+  inputKeys: ["massKg", "payloadKg", "speedMps", "densityKgM3", "wingAreaM2", "cl"],
 
   analyze(aircraft) {
     // Call the imported physics functions; do not repeat equations here.
@@ -97,7 +107,9 @@ export const feature = {
         question: "Can the current wing produce enough lift at this condition?",
         interpretation: "A qualified interpretation calculated from the current results",
         status: "pass"
-      }
+      },
+      plots: [],
+      scene: null
     };
   }
 };

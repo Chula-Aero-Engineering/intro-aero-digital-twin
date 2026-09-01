@@ -26,4 +26,15 @@ describe("visualization data contract", () => {
 
     expect(scene.overlays).toHaveLength(2);
   });
+
+  it("accepts design regions and requirement lines as data, not rendering code", () => {
+    const plot = normalizePlot({
+      series: [{ points: [{ x: 0.2, y: 0.1 }, { x: 0.4, y: -0.1 }] }],
+      regions: [{ xMin: 0.22, xMax: 0.37, yMin: 0.05, yMax: 0.2, label: "Acceptable" }],
+      referenceLines: [{ axis: "y", value: 0.05, label: "Minimum margin" }],
+    });
+
+    expect(plot.regions).toHaveLength(1);
+    expect(plot.referenceLines).toHaveLength(1);
+  });
 });
