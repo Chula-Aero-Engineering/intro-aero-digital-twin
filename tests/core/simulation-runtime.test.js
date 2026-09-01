@@ -1,0 +1,48 @@
+import { describe, expect, it } from "vitest";
+import { rk4Step } from "../../src/core/simulation/integrator.js";
+import { createSimulationSession, runSimulation } from "../../src/core/simulation/runtime.js";
+
+const aircraft = { pitchInertiaKgM2: 2, pitchRateRadS: 0, rollRateRadS: 0, yawRateRadS: 0, bankAngleDeg: 0, simulationDurationS: 1 };
+
+function modelEntry(id, kind, evaluate, provides = [`test.${id}`]) {
+  return { feature: { id, contractVersion: 4, requiresCapabilities: [], providesCapabilities: provides }, model: { kind, evaluate } };
+}
+
+describe("topic-neutral simulation runtime", () => {
+  it("uses fourth-order Runge-Kutta accurately", () => {
+    const next = rk4Step((state) => ({ value: state.value }), { value: 1 }, 0, 0.1);
+    expect(next.value).toBeCloseTo(Math.exp(0.1), 6);
+  });
+
+  it("preserves equilibrium when no model supplies a load", () => {
+    const result = runSimulation({ entries: [], aircraft, scenario: { durationS: 0.1 } });
+    expect(result.state.pitchRad).toBe(0);
+    expect(result.state.pitchRateRadS).toBe(0);
+    expect(result.history.at(-1).pitchMomentNm).toBe(0);
+  });
+
+  it("converts a body-axis pitching moment into the expected angular acceleration", () => {
+    const load = modelEntry("load", "load", () => ({ momentsBodyNm: { x: 0, y: 1, z: 0 } }));
+    const result = runSimulation({ entries: [load], aircraft, scenario: { durationS: 1 } });
+    expect(result.state.pitchRateRadS).toBeCloseTo(0.5, 8);
+    expect(result.state.pitchRad).toBeCloseTo(0.25, 8);
+  });
+
+  it("distinguishes restoring, neutral, and divergent qualitative behavior", () => {
+    function response(stiffness) {
+      const stateModel = modelEntry("mode", "state-model", ({ state }) => ({ derivatives: { pitchRad: state.pitchRateRadS, pitchRateRadS: stiffness * state.pitchRad } }));
+      return runSimulation({ entries: [stateModel], aircraft, scenario: { durationS: 1, initialState: { pitchRad: 0.1, pitchRateRadS: 0 } } }).state.pitchRad;
+    }
+    expect(Math.abs(response(-1))).toBeLessThan(0.1);
+    expect(response(0)).toBeCloseTo(0.1, 8);
+    expect(response(1)).toBeGreaterThan(0.1);
+  });
+
+  it("creates a fresh in-memory session at lesson defaults", () => {
+    const session = createSimulationSession({ entries: [], aircraft, scenario: { durationS: 2, initialState: { pitchRad: 0.2 } } });
+    expect(session.timeS).toBe(0);
+    expect(session.durationS).toBe(2);
+    expect(session.history).toHaveLength(1);
+    expect(session.state.pitchRad).toBe(0.2);
+  });
+});

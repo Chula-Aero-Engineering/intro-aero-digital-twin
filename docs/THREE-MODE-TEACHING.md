@@ -62,7 +62,7 @@ The interaction does not change by mode:
 1. Copy `templates/FEATURE-SPEC.md` into `student-work/specs`.
 2. Choose the mode and topic ID.
 3. Complete the engineering question, model, inputs, outputs, assumptions, validity limits, expected behavior, reference calculation, verification cases, visualization requirements, file names, and enabled decision.
-4. For Aircraft or Design mode, declare earlier function dependencies by signature inside the specification.
+4. For Aircraft or Design mode, declare earlier capability dependencies by ID, minimum version, inputs, units, and output.
 5. Attach only that completed Markdown file to ordinary ChatGPT.
 6. Ask ChatGPT to show its Implementation Interpretation first and generate no code.
 7. Check the equations, units, conditions, assumptions, behavior, and verification plan. Request a revised interpretation if needed.
@@ -77,10 +77,10 @@ The three generated files remain the same at every level. What becomes more soph
 Before assigning a new level, confirm:
 
 - the required canonical aircraft fields already exist in the core;
-- any earlier student-function dependency has a stable documented signature;
+- any earlier capability dependency has a stable documented ID, version, inputs, units, and output;
 - the exact governing formulation has been selected and taught;
 - every requirement and acceptable limit is numerical or explicitly justified;
-- the starter renderer already supports the requested plot or point/arrow overlay;
+- the starter renderer already supports the requested plot, time history, or data-only scene overlay;
 - the assignment can still be generated from one completed specification without uploading repository files.
 
 If new shared state or rendering vocabulary is needed, add that as an instructor core update before the lesson. Do not ask students or ChatGPT to redesign the shell.

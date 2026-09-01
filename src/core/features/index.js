@@ -7,7 +7,9 @@ const featureModules = {
   ...studentFeatureModules,
 };
 
-export const features = Object.values(featureModules)
-  .map((module) => module.feature)
-  .filter((feature) => feature && typeof feature === "object")
-  .sort((a, b) => String(a.title).localeCompare(String(b.title)));
+export const featureEntries = Object.values(featureModules)
+  .map((module) => ({ feature: module.feature, model: module.model }))
+  .filter(({ feature }) => feature && typeof feature === "object")
+  .sort((a, b) => String(a.feature.title).localeCompare(String(b.feature.title)));
+
+export const features = featureEntries.map(({ feature }) => feature);

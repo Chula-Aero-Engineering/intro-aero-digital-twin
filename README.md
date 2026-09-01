@@ -1,6 +1,6 @@
 # Intro Aero AI-Assisted Engineering Tool
 
-A reusable Vite + React + JavaScript starter for an Introduction to Aerospace Engineering course. One persistent 3D aircraft gains small, verified analysis and visualization modules as students learn new physics. The purpose is engineering specification and verification—not web-development instruction and not asking AI to build an entire application.
+A reusable Vite + React + JavaScript starter for an Introduction to Aerospace Engineering course. One persistent 3D aircraft gains small, verified analysis, force/moment, and reduced-order response capabilities as students learn new physics. Stability, control, lift, drag, performance, and future topics share the same aircraft and dependency-aware runtime. The purpose is engineering specification and verification—not web-development instruction and not asking AI to build an entire application.
 
 > **AI-generated code is an implementation candidate, not engineering evidence.** Students select and understand the physics, predict behavior, define verification cases, inspect the implementation, and make the engineering decision.
 
@@ -63,7 +63,7 @@ The canonical public repository is owned by the `Chula-Aero-Engineering` organiz
 5. Run `npm test` and `npm run dev`.
 6. Compare the result with the manual calculation, test expected behavior, locate the equation in code, and use the result to answer the original engineering question.
 
-The application automatically discovers every `src/student/features/*.feature.js` file and renders it through the shared module workspace. Version 2 and 3 features may provide numeric plot points and simple point/arrow overlays; the core owns Three.js, SVG plotting, JSX, CSS, and responsive behavior. Existing Version 1 features remain compatible. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) and [`examples/lift-example`](examples/lift-example).
+The application automatically discovers every `src/student/features/*.feature.js` file and renders it through the shared module workspace. Version 4 features may declare reusable capabilities and export a data-only `derived`, `load`, or `state-model` adapter. The core resolves prerequisites, integrates reduced-order states with fixed-step RK4, animates the aircraft, records histories, and produces print/JSON/CSV evidence. Existing Version 1–3 features remain compatible as analysis modules. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) and [`examples/lift-example`](examples/lift-example).
 
 Modules progress through three learning modes: **Concept** isolates mathematical behavior, **Aircraft** derives it from physical contributors, and **Design** evaluates requirements and feasible regions. Every mode uses the same one-specification, three-generated-file student workflow. See [`docs/THREE-MODE-TEACHING.md`](docs/THREE-MODE-TEACHING.md).
 
@@ -77,7 +77,8 @@ Instructor changes use a clean `core/<lesson-slug>` branch and are checked with 
 - [`Troubleshooting`](docs/TROUBLESHOOTING.md) — evidence-based recovery prompts.
 - [`Laptop and iPad workflows`](docs/DEVICE-WORKFLOWS.md) — local VS Code, Codespaces, and Pages fallback.
 - [`3D aircraft asset`](docs/3D-AIRCRAFT.md) — Blender source, named parts, performance intent, and rebuild process.
-- [`Stability unit dry run`](docs/STABILITY-UNIT-RUNBOOK.md) — five planned student modules and the recurring classroom sequence.
+- [`Stability unit dry run`](docs/STABILITY-UNIT-RUNBOOK.md) — the recurring classroom sequence for the cumulative stability topic.
+- [`Private instructor workflow`](docs/PRIVATE-INSTRUCTOR-WORKFLOW.md) — solution-safe preparation and dry runs outside the public repository.
 - [`Stability student briefs`](examples/stability-unit/README.md) — engineering questions and bounded file sets without implemented solutions.
 - [`Stability lecture deck`](docs/slides/stability-from-physics-to-feature.pptx) — physics-to-feature classroom slides.
 

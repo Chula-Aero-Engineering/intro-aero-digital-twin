@@ -1,40 +1,49 @@
-# Stability Unit Dry-Run Guide
+# Stability Topic Dry-Run Guide
 
-The module rail contains the installed foundations plus five planned stability slots. Each stability block owns one expected student feature ID. Until that feature exists, the shared 3D workspace shows a teaching placeholder with the exact path students will create.
+The Stability topic contains fourteen cumulative public slots. The catalog publishes only each stage's title, purpose, expected feature ID, canonical inputs, and prerequisite capabilities. Completed implementations and lecture-preparation reference cases remain in the private instructor companion.
 
 ## Instructor preparation
 
-1. Start the application and select each stability block.
-2. Confirm that the input panel changes with the block and that existing foundation features remain available.
-3. Review the assignment briefs in `examples/stability-unit/README.md`.
-4. Give students a clean copy of `templates/FEATURE-SPEC.md` for the current block.
-5. Do not supply generated solution files before the specification and manual verification discussion.
+1. Synchronize the latest verified public core into the private instructor repository.
+2. Create a private preparation branch/worktree for the stage.
+3. Complete and approve the engineering specification.
+4. Install the three candidate files in the normal student-owned paths.
+5. Confirm the preceding capabilities unlock the stage and the new capability unlocks only its direct dependents.
+6. Run student tests, all core tests, the production build, the response controls, and the evidence export.
+7. Keep every completed module, expected output, and correction note private.
 
 ## Recurring class pattern
 
-1. **Predict:** Present a disturbance or loading change and ask students to predict signs, trends, and limiting cases.
-2. **Model:** Introduce the governing relationship, units, assumptions, and validity limits.
-3. **Specify:** Students complete Sections 1–12 of `FEATURE-SPEC.md`.
-4. **Verify first:** Students calculate one numerical case and define behavioral and boundary cases.
-5. **Generate:** Students attach only the completed specification to ordinary ChatGPT.
-6. **Integrate:** Students save the returned physics, feature, and test files at the specified student-owned paths.
-7. **Test:** Students run `npm test`, compare with the manual result, and vary inputs.
-8. **Decide:** Students answer the engineering question with qualified language.
+1. **Predict:** Change one physical condition and record signs, trends, or limiting behavior.
+2. **Observe:** Use the complete private instructor simulation during the live class.
+3. **Explain:** Develop the minimum governing physics needed for the stage.
+4. **Specify:** Define equations, variables, units, signs, assumptions, validity limits, capabilities, and tests.
+5. **Interpret first:** Ask AI for its engineering interpretation without code.
+6. **Approve and generate:** Approve only the corrected interpretation, then create exactly three files.
+7. **Verify and integrate:** Run tests and compare against the manual/live-class evidence. The new capability remains available downstream.
+8. **Decide:** State what the result supports and what the model cannot establish.
 
-## Feature sequence
+## Public sequence
 
-| Block | Expected ID | Main result | Decision focus |
-| --- | --- | --- | --- |
-| Disturbance, trim, response | `trim-response` | trim angle and disturbance moment tendency | restoring tendency versus time response |
-| Longitudinal static stability | `static-margin` | nondimensional static margin | positive, neutral, or negative restoring tendency |
-| CG and loading limits | `cg-loading` | loaded CG | position inside the introductory envelope |
-| Dynamic behavior | `dynamic-mode` | decay/growth, damping ratio, period | workload and response quality, not damping alone |
-| Mission loading | `mission-loading` | before/after CG and static margin | mission acceptability after the payload moves aft |
+| Stage | Expected ID | Capability focus |
+| --- | --- | --- |
+| 1 | `force-moment` | force/moment summation |
+| 2 | `static-restoring-moment` | static restoring contribution |
+| 3 | `moment-contributions` | component moment assembly |
+| 4 | `trim-response` | live Cm–alpha and trim |
+| 5 | `static-margin` | CG, neutral point, and static margin |
+| 6 | `tail-elevator-contribution` | tail stability and control authority |
+| 7 | `stick-free-effect` | stick-free effectiveness |
+| 8 | `cg-loading` | payload-to-response chain |
+| 9 | `lateral-static-stability` | sideslip-induced roll/yaw tendency |
+| 10 | `pitch-dynamic-response` | pitch inertia, damping, and histories |
+| 11 | `longitudinal-modes` | short-period and phugoid models |
+| 12 | `dynamic-mode` | roll, Dutch-roll, and spiral models |
+| 13 | `stability-trade-study` | stability/control/handling tradeoffs |
+| 14 | `mission-loading` | evidence and model defensibility |
 
-## What the core intentionally does not do
+Stages 11–12 are separately validated reduced-order linear teaching models. Neither the UI, assignments, nor student reports may describe them as a validated nonlinear 6-DOF digital twin.
 
-The instructor-owned application stores and displays scenario inputs, organizes the teaching sequence, and formats analysis output. It does not calculate trim angle, static margin, loaded CG, modal properties, or the mission decision. Those equations remain the student work.
+## Public/private gate
 
-## Pulling later instructor updates
-
-Students should commit their student-owned work before incorporating an instructor update. Because instructor changes remain outside `src/student`, `tests/student`, and `student-work`, a normal Git merge should preserve their files. The core boundary checker prevents a `core/*` pull request from changing those paths.
+Public core updates may add shared state, rendering vocabulary, runtime behavior, documentation, and empty catalog slots. They must not add or change files in `src/student`, `tests/student`, or `student-work`, and must not contain completed stability/control implementations, private fixtures, or lecture-preparation output.

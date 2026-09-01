@@ -3,28 +3,23 @@ import { initialAircraft, parameterDefinitions } from "../../src/core/data/aircr
 import { featuresForLesson, lessonCatalog } from "../../src/core/data/lessonCatalog.js";
 
 describe("stability teaching core", () => {
-  it("provides foundations plus the five stability blocks", () => {
+  it("provides reusable course topics instead of a stability-specific shell", () => {
     expect(lessonCatalog.map((lesson) => lesson.id)).toEqual([
-      "foundations",
-      "disturbance-trim-response",
-      "longitudinal-static-stability",
-      "cg-loading-limits",
-      "lateral-directional-dynamics",
-      "mission-loading-decision",
+      "foundations", "stability", "control", "lift", "drag", "performance",
     ]);
   });
 
   it("uses unique feature slots", () => {
-    const featureIds = lessonCatalog.flatMap((lesson) => lesson.featureIds);
+    const featureIds = lessonCatalog.flatMap((lesson) => lesson.modules.map((module) => module.id));
     expect(new Set(featureIds).size).toBe(featureIds.length);
-    expect(featureIds).toEqual([
-      "trim-response", "static-margin", "cg-loading", "dynamic-mode", "mission-loading",
-    ]);
+    expect(featureIds).toEqual(expect.arrayContaining([
+      "force-moment", "trim-response", "static-margin", "cg-loading", "dynamic-mode", "mission-loading", "lift",
+    ]));
   });
 
   it("defines every lesson input in the canonical aircraft state", () => {
     const definitionKeys = new Set(parameterDefinitions.map(({ key }) => key));
-    const lessonKeys = new Set(lessonCatalog.flatMap((lesson) => lesson.parameterKeys));
+    const lessonKeys = new Set(lessonCatalog.flatMap((lesson) => lesson.modules.flatMap((module) => module.parameterKeys || [])));
 
     lessonKeys.forEach((key) => {
       expect(initialAircraft).toHaveProperty(key);
@@ -35,12 +30,11 @@ describe("stability teaching core", () => {
   it("places assigned analyses and leaves legacy analyses in foundations", () => {
     const features = [{ id: "lift" }, { id: "static-margin" }, { id: "weight-demo" }];
 
-    expect(featuresForLesson(features, lessonCatalog[0]).map(({ id }) => id)).toEqual([
-      "lift", "weight-demo",
-    ]);
-    expect(featuresForLesson(features, lessonCatalog[2]).map(({ id }) => id)).toEqual([
+    expect(featuresForLesson(features, lessonCatalog[0]).map(({ id }) => id)).toEqual(["weight-demo"]);
+    expect(featuresForLesson(features, lessonCatalog[1]).map(({ id }) => id)).toEqual([
       "static-margin",
     ]);
+    expect(featuresForLesson(features, lessonCatalog[3]).map(({ id }) => id)).toEqual(["lift"]);
   });
 
   it("starts with a physically consistent introductory loading scenario", () => {

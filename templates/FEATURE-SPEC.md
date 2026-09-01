@@ -20,7 +20,7 @@ What engineering question should this feature help answer?
 
 List the governing equation or relationships.
 
-For Aircraft or Design mode, list any earlier student physics functions that this feature must reuse. Give the exact file path, export name, inputs, units, and output. Do not paste the implementation. Write `No prior module dependency` if none.
+For Aircraft or Design mode, list any earlier aircraft capabilities this feature consumes. Give each instructor-assigned capability ID, minimum version, inputs, units, and expected output. The core injects these results at runtime so the new feature does not copy or directly import an earlier equation. Write `No prior capability dependency` if none.
 
 For Design mode, requirements do not replace physics. State the model used to evaluate every requirement and the sweep, search, or comparison method.
 
@@ -172,7 +172,33 @@ The shared `aircraft` object provides:
   forwardCgLimitM,
   aftCgLimitM,
   dutchRollRealPartPerS,
-  dutchRollImagPartRadS
+  dutchRollImagPartRadS,
+  pitchInertiaKgM2,
+  rollInertiaKgM2,
+  yawInertiaKgM2,
+  externalForceN,
+  externalForceXM,
+  wingLiftN,
+  wingForceXM,
+  tailForceN,
+  tailPositionM,
+  thrustN,
+  thrustLineZM,
+  tailAreaM2,
+  tailArmM,
+  elevatorDeflectionDeg,
+  elevatorEffectiveness,
+  stickFreeFactor,
+  sideslipDeg,
+  clBetaPerRad,
+  cnBetaPerRad,
+  cmQPerRad,
+  rollRateRadS,
+  pitchRateRadS,
+  yawRateRadS,
+  bankAngleDeg,
+  minimumStaticMargin,
+  simulationDurationS
 }
 ```
 
@@ -184,7 +210,7 @@ The `*.feature.js` file imports functions from its new physics file and exports 
 
 ```javascript
 export const feature = {
-  contractVersion: 3,
+  contractVersion: 4,
   id: "unique-kebab-case-id",
   title: "Feature title",
   description: "One-sentence engineering purpose",
@@ -192,8 +218,18 @@ export const feature = {
   learningMode: "concept",
   topicId: "topic-id",
   inputKeys: ["speedMps", "wingAreaM2"],
+  requiresCapabilities: [],
+  providesCapabilities: [{ id: "topic.new-capability", version: 1 }],
+  assumptions: ["Short, model-specific assumption"],
+  validityLimits: ["Condition outside which this model should not be trusted"],
+  simulation: {
+    durationS: 12,
+    initialState: { pitchRad: 0, pitchRateRadS: 0 },
+    controls: {},
+    disturbance: {}
+  },
 
-  analyze(aircraft) {
+  analyze(aircraft, capabilityContext) {
     // Call imported physics functions. Do not repeat governing equations here.
 
     return {
@@ -257,14 +293,28 @@ export const feature = {
     };
   }
 };
+
+export const model = {
+  // Use exactly one: "derived", "load", or "state-model".
+  kind: "derived",
+
+  evaluate(runtimeContext) {
+    // Call the new pure physics functions. Read earlier results from
+    // runtimeContext.capabilities; do not repeat or import their equations.
+    return { values: { derivedQuantity: 0 } };
+  }
+};
 ```
 
 Contract rules:
 
 - `results` contains one object per displayed result.
-- `contractVersion` is `3`; older Version 1 and 2 files and files that omit the version remain compatible.
+- `contractVersion` is `4`; older Version 1–3 files and files that omit the version remain compatible as analysis-only modules.
 - `learningMode` exactly matches the completed Learning Mode section. `topicId` connects the three levels of one engineering topic.
 - `inputKeys` contains only canonical aircraft fields actually used by this module. The core uses it to show focused controls.
+- `requiresCapabilities` lists only assigned earlier capability IDs and minimum versions. Use `[]` when there are no dependencies.
+- `providesCapabilities` lists at least one unique, instructor-assigned capability ID and positive integer version.
+- `assumptions` and `validityLimits` contain concise evidence statements used by the print-ready report.
 - `value` is a finite number or short text; `unit` is always a string, including `""` for dimensionless values.
 - `precision` is a non-negative integer for numeric display.
 - Use `emphasis: true` only for the primary result.
@@ -273,15 +323,18 @@ Contract rules:
 - `decision.status` is `"pass"`, `"caution"`, or `"neutral"`.
 - Include `plots: []` when Section 10 says no plot. Plot points must be calculated from the physics functions, not typed as unexplained display values.
 - Include `regions: []` and `referenceLines: []` when no design constraints are plotted. Every displayed limit must come from the completed specification.
-- Include `scene: null` when Section 10 says no 3D overlay. Supported overlays are data-only `point` and `arrow` objects. Coordinates use the aircraft frame: +x forward, +y right wing, +z up.
+- Include `scene: null` when Section 10 says no 3D overlay. Supported overlays are data-only `point`, `marker`, `arrow`, `line`, and `moment-arm` objects. Coordinates use the aircraft frame: +x forward, +y right wing, +z up.
 - Do not include a component property or import React/shared UI components.
+- Export one `model` object from the feature file. A `derived` model returns `values`; a `load` model returns body-axis `forcesBodyN`, `momentsBodyNm`, and optional `values`; a `state-model` returns `derivatives` keyed by the declared reduced-order states.
+- `model.evaluate(runtimeContext)` receives `aircraft`, `state`, `timeS`, `controls`, `disturbance`, `derived`, `capabilities`, `forcesBodyN`, and `momentsBodyNm`. It must return finite data and must not mutate the context.
+- Use the aircraft frame `+x` forward, `+y` right wing, and `+z` up. The core owns fixed-step RK4 integration, animation, run controls, logging, and evidence export.
 
 Mode rules:
 
 - Concept mode must keep the model intentionally small and must not introduce unrequested aircraft-detail equations.
 - Aircraft mode must calculate the requested aggregate behavior from the listed aircraft parameters and expose component contributions where specified.
 - Design mode must evaluate only the stated variables, model, requirements, and limits. It must not silently perform an optimizer search or invent a design criterion.
-- A feature may import an earlier student physics function only when Section 2 provides its exact path and signature. Do not request the earlier source file or duplicate its equation.
+- A feature consumes earlier model results only through the assigned capability context. Do not request earlier source files, import earlier student modules, or duplicate their equations.
 
 The application owns the feature header, result grid, units, verification styling, decision styling, error presentation, and responsive layout.
 

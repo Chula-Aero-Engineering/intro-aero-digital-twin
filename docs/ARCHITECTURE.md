@@ -1,49 +1,85 @@
 # Architecture
 
-The instructor-owned application has one shared aircraft state in `src/core/App.jsx`, initialized from `src/core/data/aircraft.js`. The parameter panel updates that state, and every discovered feature receives the same current aircraft object. There is no parallel copy of the design state.
+The public application is a topic-agnostic aircraft capability shell. Stability, control, lift, drag, performance, and future topics use one canonical aircraft state and the same rendering, simulation, verification, and evidence infrastructure.
 
 ```text
-src/core/data/aircraft.js
-        ↓ initializes
- src/core/App.jsx ────→ focused ParameterPanel
-        │
-        └── current aircraft state
-                   ↓
-          automatic *.feature.js discovery
-                   ↓
-          ModuleWorkspace
-          ├── AircraftViewport (Three.js)
-          ├── EngineeringPlot (SVG)
-          └── FeatureCard
-                   ↓
-          structured analysis data
-                   ↓ fixed renderer
- results + verification + decision + plot/overlay data
-                   ↓ calls
-      src/student/physics/*.js
-                   ↑
-       tests/student/*.test.js
+Canonical aircraft + lesson defaults
+                ↓
+       Topic/module catalog
+                ↓
+  Version 1–3 analysis modules ──→ fixed analysis renderer
+                │
+  Version 4 capability modules
+                ↓
+      dependency/version resolver
+                ↓
+ derived values → body loads → reduced-order derivatives
+                ↓
+         fixed-step RK4 core
+                ↓
+  3D attitude + histories + evidence report
 ```
 
-## Boundaries
+## Topic catalog and progression
 
-- `src/core` is instructor-owned and contains the shell, state, renderer, styling, discovery, and demonstrations.
-- `src/student/physics` contains student-owned pure SI-unit calculations with no React or browser dependencies.
-- `src/student/features` contains student-owned data-only definitions that call physics functions and return results, verification outcomes, and interpretations.
-- `src/student/models` is reserved for future student-authored assumption and derivation modules.
-- `tests/core` verifies the shell and contracts; `tests/student` verifies student physics directly.
-- `student-work/specs` stores completed student specifications.
-- `templates` scaffolds engineering thinking and bounded AI requests.
-- `examples` contains complete teaching references that are not automatically active in the starter app.
+`src/core/data/topicCatalog.js` contains public module metadata: topic, stage, title, purpose, expected feature ID, canonical inputs, and capability prerequisites. It contains no student equations, solution output, or private reference cases.
 
-## Adding a feature
+The curriculum builder merges this catalog with automatically discovered modules. A slot is shown as **Ready to build** when every requirement is installed, **Locked** when an earlier capability is absent or too old, **Installed analysis** for a legacy module, or **Installed · simulation ready** for a valid Version 4 module and its dependency closure.
 
-A feature creates one physics file, one data-only `*.feature.js` definition, and one test file. `src/core/features/index.js` uses Vite's built-in discovery, so students do not edit the registry or `App.jsx`. Version 2 and 3 modules may also return plot series and simple point/arrow overlays. They still contain no rendering code.
+Uncatalogued legacy modules remain under Foundations. A catalogued legacy module, such as the original lift analysis, appears in its matching topic.
 
-Version 3 adds `learningMode` (`concept`, `aircraft`, or `design`) and `topicId`. Legacy modules default to Concept mode. The module rail filters capability by learning mode while retaining the same aircraft state. Plot data may include rectangular acceptable regions and requirement reference lines for Design mode; the SVG renderer owns their appearance.
+## Student and core boundaries
 
-`src/core/features/FeatureCard.jsx` and the visualization components are instructor-owned. They validate and render every result, unit, verification case, decision, plot, overlay, error state, and responsive layout consistently. A missing `contractVersion` is interpreted as legacy Version 1, so older generated features continue to work. The optimized Blender source lives at `assets/blender/course-aircraft.blend`; the app loads its 209 KB GLB export from `public/models`. Major parts retain separate names for later instructor visualization work. A procedural aircraft remains as an immediate-loading and asset-failure fallback.
+- `src/core` owns canonical state, topic discovery, dependency resolution, RK4 integration, Three.js, plotting, run controls, error handling, and evidence export.
+- `src/student/physics` owns pure SI-unit student calculations.
+- `src/student/features` owns data-only analysis and Version 4 model adapters.
+- `tests/student` verifies student physics directly.
+- `student-work/specs` stores completed specifications.
 
-## Ownership enforcement
+An instructor core update never edits the three student-owned prefixes. The boundary is enforced by `.course/ownership.json`, local tests, and the core pull-request workflow.
 
-`AGENTS.md` supplies repository-scoped Codex instructions. `.course/ownership.json` is the machine-readable boundary used by the local checker and GitHub Actions. On a `core/*` update, `npm run verify:core-boundary -- --base main` examines committed, staged, unstaged, deleted, renamed, and untracked paths and fails if student work changed. It only reports violations; it never restores or modifies files.
+## Version 4 capability modules
+
+Version 4 retains the normal three-file workflow. The feature file exports `feature` plus `model`.
+
+```javascript
+export const feature = {
+  contractVersion: 4,
+  id: "unique-id",
+  topicId: "stability",
+  learningMode: "concept",
+  inputKeys: [],
+  requiresCapabilities: [{ id: "earlier.capability", version: 1 }],
+  providesCapabilities: [{ id: "new.capability", version: 1 }],
+  assumptions: [],
+  validityLimits: [],
+  analyze(aircraft, capabilityContext) {}
+};
+
+export const model = {
+  kind: "derived",
+  evaluate(runtimeContext) {}
+};
+```
+
+Model kinds are deliberately small:
+
+- `derived` returns `{ values }` such as loaded CG or static margin;
+- `load` returns body-axis `{ forcesBodyN, momentsBodyNm, values? }`;
+- `state-model` returns `{ derivatives }` for declared reduced-order states.
+
+The core rejects invalid kinds, non-finite output, duplicate capability providers, version mismatches, missing requirements, and dependency cycles. Later modules receive earlier results in `runtimeContext.capabilities`; they do not copy or import earlier equations.
+
+Version 1–3 modules continue to receive `analyze(aircraft)` and remain analysis-only.
+
+## Runtime and evidence
+
+The runtime uses SI units, the `+x` forward, `+y` right-wing, `+z` up frame, and deterministic fourth-order Runge–Kutta integration at `0.02 s`. The supplied pitch kernel converts a body-axis pitch moment to angular acceleration using the canonical pitch inertia. Student modules provide loads or complete reduced-order derivatives.
+
+Run state is in memory. Refreshing the page restores lesson defaults; Git and GitHub Pages persist and publish student code. The report and exports must therefore be generated before refresh.
+
+The report records aircraft/loading, flight condition, installed capabilities, run settings and traces, verification cases, assumptions, validity limits, warnings, and the current engineering decision. Every report labels the runtime as a reduced-order linear teaching model, not a validated nonlinear 6-DOF digital twin.
+
+## Private instructor companion
+
+Completed reference modules, solution tests, expected outputs, and lecture-preparation fixtures belong only in the private `intro-aero-digital-twin-instructor` repository. Its candidate modules use the same student-owned paths so a dry run exercises the exact public workflow. Only reusable core support and empty public catalog slots move upstream to this repository.

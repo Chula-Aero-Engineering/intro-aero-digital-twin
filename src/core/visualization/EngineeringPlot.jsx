@@ -26,6 +26,7 @@ export default function EngineeringPlot({ plot }) {
     if (line.axis === "x") points.push({ x: line.value, y: points[0]?.y ?? 0 });
     else points.push({ x: points[0]?.x ?? 0, y: line.value });
   });
+  if (normalized.currentX != null) points.push({ x: normalized.currentX, y: points[0]?.y ?? 0 });
   let xMin = Math.min(...points.map((point) => point.x));
   let xMax = Math.max(...points.map((point) => point.x));
   let yMin = Math.min(...points.map((point) => point.y));
@@ -91,6 +92,12 @@ export default function EngineeringPlot({ plot }) {
             <text className="plot-reference-label" x={line.axis === "x" ? x(line.value) + 6 : WIDTH - MARGIN.right - 4} y={line.axis === "y" ? y(line.value) - 7 : MARGIN.top + 15} textAnchor={line.axis === "x" ? "start" : "end"}>{line.label}</text>
           </g>
         ))}
+        {normalized.currentX != null && (
+          <g>
+            <line className="plot-cursor" x1={x(normalized.currentX)} x2={x(normalized.currentX)} y1={MARGIN.top} y2={HEIGHT - MARGIN.bottom} />
+            <text className="plot-reference-label" x={x(normalized.currentX) + 6} y={MARGIN.top + 15}>Current time</text>
+          </g>
+        )}
         {normalized.series.map((series) => (
           <g key={series.label}>
             <polyline fill="none" stroke={series.color} strokeWidth="4" strokeLinejoin="round" points={series.points.map((point) => `${x(point.x)},${y(point.y)}`).join(" ")} />

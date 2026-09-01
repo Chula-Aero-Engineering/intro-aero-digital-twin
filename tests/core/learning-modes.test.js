@@ -14,6 +14,7 @@ describe("three learning modes", () => {
 
   it("classifies planned stability work without implementing its physics", () => {
     expect(plannedFeatureSlots.every((slot) => ["concept", "aircraft", "design"].includes(slot.learningMode))).toBe(true);
-    expect(plannedFeatureSlots.every((slot) => slot.planned && slot.topicId === "stability")).toBe(true);
+    expect(plannedFeatureSlots.every((slot) => slot.planned)).toBe(true);
+    expect(plannedFeatureSlots.filter((slot) => slot.topicId === "stability")).toHaveLength(14);
   });
 });

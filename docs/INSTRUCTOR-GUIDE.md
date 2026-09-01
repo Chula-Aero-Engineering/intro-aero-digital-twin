@@ -60,6 +60,6 @@ See [`DEVICE-WORKFLOWS.md`](./DEVICE-WORKFLOWS.md) for the matched laptop, Codes
 
 Distribute the course through the public organization repository and have students create personal forks. Publish core updates to its `main` branch. A template-generated repository is intentionally not used because it would not retain the Git relationship students need for later upstream synchronization.
 
-The optional stability dry run is documented in [`STABILITY-UNIT-RUNBOOK.md`](./STABILITY-UNIT-RUNBOOK.md). Its five entries are planned slots in the module rail, not prebuilt physics. When a student adds a matching feature ID, automatic discovery replaces the placeholder with the verified analysis while retaining the shared 3D aircraft and renderer.
+The optional stability dry run is documented in [`STABILITY-UNIT-RUNBOOK.md`](./STABILITY-UNIT-RUNBOOK.md). Its fourteen cumulative entries are public capability slots, not prebuilt physics. When a student adds a matching feature ID, automatic discovery replaces the placeholder, registers its Version 4 capability, and unlocks satisfied dependents while retaining the shared aircraft and renderer.
 
 Use the progression in [`THREE-MODE-TEACHING.md`](./THREE-MODE-TEACHING.md) within a topic: Concept establishes mathematical meaning, Aircraft derives that behavior from physical contributors, and Design applies it to requirements and tradeoffs. The mode changes the sophistication of the engineering specification, not the number of files or the student ChatGPT procedure.

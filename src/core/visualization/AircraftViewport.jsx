@@ -54,24 +54,33 @@ function overlayGroup(scene, scale) {
   const group = new THREE.Group();
   scene.overlays.forEach((overlay) => {
     const color = new THREE.Color(overlay.color || "#dce9ad");
-    if (overlay.type === "point") {
+    if (["point", "marker"].includes(overlay.type)) {
       const point = new THREE.Mesh(new THREE.SphereGeometry(scale * 0.035, 16, 12), new THREE.MeshBasicMaterial({ color }));
       point.position.set(overlay.position.x, overlay.position.y, overlay.position.z);
       group.add(point);
-    } else {
+    } else if (overlay.type === "arrow") {
       const origin = new THREE.Vector3(overlay.origin.x, overlay.origin.y, overlay.origin.z);
       const vector = new THREE.Vector3(overlay.vector.x, overlay.vector.y, overlay.vector.z);
       const length = vector.length();
       if (length > 0) group.add(new THREE.ArrowHelper(vector.normalize(), origin, length, color, Math.min(length * 0.25, scale * 0.14), Math.min(length * 0.12, scale * 0.07)));
+    } else {
+      const geometry = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(overlay.start.x, overlay.start.y, overlay.start.z),
+        new THREE.Vector3(overlay.end.x, overlay.end.y, overlay.end.z),
+      ]);
+      group.add(new THREE.Line(geometry, new THREE.LineBasicMaterial({ color })));
     }
   });
   return group;
 }
 
-export default function AircraftViewport({ aircraft, scene }) {
+export default function AircraftViewport({ aircraft, scene, attitude }) {
   const hostRef = useRef(null);
+  const attitudeRef = useRef(attitude);
   const [webglFailed, setWebglFailed] = useState(false);
   const normalizedScene = normalizeScene(scene);
+
+  useEffect(() => { attitudeRef.current = attitude; }, [attitude]);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -93,7 +102,9 @@ export default function AircraftViewport({ aircraft, scene }) {
     threeScene.fog = new THREE.Fog(0x102f2a, 4, 11);
     const camera = new THREE.PerspectiveCamera(38, 1, 0.01, 50);
     const { group: fallbackAircraft, span } = airplaneGroup(aircraft);
-    threeScene.add(fallbackAircraft);
+    const aircraftRoot = new THREE.Group();
+    aircraftRoot.add(fallbackAircraft);
+    threeScene.add(aircraftRoot);
     let disposed = false;
 
     const loader = new GLTFLoader();
@@ -116,9 +127,9 @@ export default function AircraftViewport({ aircraft, scene }) {
             object.scale.y *= spanScale;
           }
         });
-        threeScene.remove(fallbackAircraft);
+        aircraftRoot.remove(fallbackAircraft);
         disposeObject(fallbackAircraft);
-        threeScene.add(model);
+        aircraftRoot.add(model);
       },
       undefined,
       () => {
@@ -155,6 +166,8 @@ export default function AircraftViewport({ aircraft, scene }) {
 
     const render = () => {
       if (visible) {
+        const current = attitudeRef.current || {};
+        aircraftRoot.rotation.set(current.rollRad || 0, current.pitchRad || 0, current.yawRad || 0);
         controls.update();
         renderer.render(threeScene, camera);
       }

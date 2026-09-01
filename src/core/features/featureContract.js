@@ -42,24 +42,29 @@ function failedAnalysis(feature, error) {
   };
 }
 
-export function resolveFeatureAnalysis(feature, aircraft) {
+export function resolveFeatureAnalysis(feature, aircraft, capabilityContext = {}) {
   try {
     const contractVersion = feature.contractVersion ?? 1;
-    if (![1, 2, 3].includes(contractVersion)) {
+    if (![1, 2, 3, 4].includes(contractVersion)) {
       throw new TypeError(`Unsupported feature contract version: ${contractVersion}.`);
     }
-    if (contractVersion === 3) {
+    if (contractVersion >= 3) {
       if (!["concept", "aircraft", "design"].includes(feature.learningMode)) {
-        throw new TypeError("Version 3 features require learningMode: concept, aircraft, or design.");
+        throw new TypeError("Version 3+ features require learningMode: concept, aircraft, or design.");
       }
       if (typeof feature.topicId !== "string" || feature.topicId.trim() === "") {
-        throw new TypeError("Version 3 features require a non-empty topicId.");
+        throw new TypeError("Version 3+ features require a non-empty topicId.");
       }
     }
     if (typeof feature.analyze !== "function") {
       throw new TypeError("The feature must export an analyze(aircraft) function.");
     }
-    return assertAnalysis(feature.analyze(aircraft));
+    if (contractVersion === 4) {
+      if (!Array.isArray(feature.requiresCapabilities) || !Array.isArray(feature.providesCapabilities)) {
+        throw new TypeError("Version 4 features require capability arrays.");
+      }
+    }
+    return assertAnalysis(feature.analyze(aircraft, capabilityContext));
   } catch (error) {
     return failedAnalysis(feature, error);
   }

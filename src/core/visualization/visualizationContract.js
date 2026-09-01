@@ -33,6 +33,7 @@ export function normalizePlot(plot) {
     referenceLines: (Array.isArray(plot.referenceLines) ? plot.referenceLines : [])
       .filter((line) => ["x", "y"].includes(line?.axis) && finite(line?.value))
       .map((line) => ({ ...line, label: line.label || "Requirement" })),
+    currentX: finite(plot.currentX) ? plot.currentX : null,
   };
 }
 
@@ -40,10 +41,13 @@ export function normalizeScene(scene) {
   if (!scene || typeof scene !== "object") return { caption: "Baseline aircraft geometry", overlays: [] };
 
   const overlays = (Array.isArray(scene.overlays) ? scene.overlays : [])
-    .filter((overlay) => ["arrow", "point"].includes(overlay?.type))
+    .filter((overlay) => ["arrow", "point", "marker", "line", "moment-arm"].includes(overlay?.type))
     .filter((overlay) => {
-      if (overlay.type === "point") {
+      if (["point", "marker"].includes(overlay.type)) {
         return [overlay.position?.x, overlay.position?.y, overlay.position?.z].every(finite);
+      }
+      if (["line", "moment-arm"].includes(overlay.type)) {
+        return [overlay.start?.x, overlay.start?.y, overlay.start?.z, overlay.end?.x, overlay.end?.y, overlay.end?.z].every(finite);
       }
       return [
         overlay.origin?.x, overlay.origin?.y, overlay.origin?.z,

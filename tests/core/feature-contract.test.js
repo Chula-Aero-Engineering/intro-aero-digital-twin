@@ -22,6 +22,21 @@ describe("feature contract compatibility", () => {
     expect(resolveFeatureAnalysis({ contractVersion: 3, learningMode: "design", topicId: "stability", analyze: () => validAnalysis }, aircraft)).toBe(validAnalysis);
   });
 
+  it("passes capability context to Version 4 analyses", () => {
+    const context = { derived: { loadedCgM: 0.2 } };
+    let received;
+    const feature = {
+      contractVersion: 4,
+      learningMode: "aircraft",
+      topicId: "stability",
+      requiresCapabilities: [],
+      providesCapabilities: [{ id: "mass.cg.loaded", version: 1 }],
+      analyze: (_aircraft, capabilityContext) => { received = capabilityContext; return validAnalysis; },
+    };
+    expect(resolveFeatureAnalysis(feature, aircraft, context)).toBe(validAnalysis);
+    expect(received).toBe(context);
+  });
+
   it("shows a contract failure when Version 3 mode metadata is missing", () => {
     const analysis = resolveFeatureAnalysis({ contractVersion: 3, analyze: () => validAnalysis }, aircraft);
     expect(analysis.verificationCases[0].passed).toBe(false);
