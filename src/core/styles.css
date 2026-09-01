@@ -77,6 +77,10 @@ input:focus { outline: 3px solid #ffb39f; border-color: var(--accent); }
 .plot-tick { fill: #65716b; font-size: 12px; }
 .plot-axis-label { fill: var(--ink); font-size: 13px; font-weight: 700; }
 .module-stage > .feature-card { grid-column: 1 / -1; }
+.planned-module { grid-column: 1 / -1; padding: 32px; border: 1px dashed var(--green); background: #f1f4e5; }
+.planned-module h2 { margin: 0 0 12px; font-family: Georgia, serif; font-size: 2rem; font-weight: 400; }
+.planned-module p { max-width: 760px; color: #56635d; line-height: 1.55; }
+.planned-module code { display: inline-block; max-width: 100%; padding: 10px 12px; overflow-wrap: anywhere; color: white; background: var(--green); }
 .feature-card { border: 1px solid var(--ink); background: white; box-shadow: 10px 10px 0 #dfe3da; }
 .feature-card > header { display: flex; gap: 24px; padding: 26px; border-bottom: 1px solid var(--ink); }
 .feature-card header h2 { margin: 0 0 6px; font-family: Georgia, serif; font-size: 2rem; font-weight: 400; }

@@ -70,5 +70,8 @@ Instructor changes use a clean `core/<lesson-slug>` branch and are checked with 
 - [`Troubleshooting`](docs/TROUBLESHOOTING.md) — evidence-based recovery prompts.
 - [`Laptop and iPad workflows`](docs/DEVICE-WORKFLOWS.md) — local VS Code, Codespaces, and Pages fallback.
 - [`3D aircraft asset`](docs/3D-AIRCRAFT.md) — Blender source, named parts, performance intent, and rebuild process.
+- [`Stability unit dry run`](docs/STABILITY-UNIT-RUNBOOK.md) — five planned student modules and the recurring classroom sequence.
+- [`Stability student briefs`](examples/stability-unit/README.md) — engineering questions and bounded file sets without implemented solutions.
+- [`Stability lecture deck`](docs/slides/stability-from-physics-to-feature.pptx) — physics-to-feature classroom slides.
 
 This is intentionally not a complete aerospace analysis package. Atmosphere, drag, performance, stability, control, and structures remain future student features.

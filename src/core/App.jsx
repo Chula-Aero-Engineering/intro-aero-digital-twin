@@ -5,11 +5,14 @@ import ModuleWorkspace from "./components/ModuleWorkspace.jsx";
 import { features } from "./features/index.js";
 import { getFeatureInputKeys } from "./features/featureContract.js";
 import { initialAircraft } from "./data/aircraft.js";
+import { foundationInputKeys, plannedFeatureSlots } from "./data/lessonCatalog.js";
 
 export default function App() {
   const [aircraft, setAircraft] = useState(initialAircraft);
   const [selectedFeatureId, setSelectedFeatureId] = useState(features[0]?.id);
-  const selectedFeature = features.find((feature) => feature.id === selectedFeatureId) || features[0];
+  const allModules = [...features, ...plannedFeatureSlots.filter((slot) => !features.some((feature) => feature.id === slot.id))];
+  const selectedFeature = allModules.find((feature) => feature.id === selectedFeatureId) || allModules[0];
+  const selectedInputKeys = getFeatureInputKeys(selectedFeature) || foundationInputKeys;
 
   function updateParameter(key, value) {
     setAircraft((current) => ({ ...current, [key]: value }));
@@ -38,10 +41,10 @@ export default function App() {
 
       <main>
         <div className="section-rule"><span>AIRCRAFT</span><p>The same shared aircraft persists while each module reveals a different engineering relationship.</p></div>
-        <ModuleWorkspace features={features} aircraft={aircraft} selectedId={selectedFeatureId} onSelect={setSelectedFeatureId} />
+        <ModuleWorkspace features={features} plannedFeatures={plannedFeatureSlots} aircraft={aircraft} selectedId={selectedFeatureId} onSelect={setSelectedFeatureId} />
         <div className="section-rule"><span>INPUTS</span><p>Only the current module's declared inputs are shown; legacy modules continue to receive the complete aircraft state.</p></div>
-        <ParameterPanel aircraft={aircraft} onChange={updateParameter} inputKeys={getFeatureInputKeys(selectedFeature)} />
-        <AircraftOverview aircraft={aircraft} />
+        <ParameterPanel aircraft={aircraft} onChange={updateParameter} inputKeys={selectedInputKeys} />
+        <AircraftOverview aircraft={aircraft} parameterKeys={selectedInputKeys} />
       </main>
 
       <footer>

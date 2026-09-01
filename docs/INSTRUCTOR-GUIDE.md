@@ -57,3 +57,5 @@ If a lesson needs a new canonical aircraft input or shared behavior, complete [`
 If compatibility cannot be maintained, resolve the required student migration explicitly before assigning the lesson rather than allowing an agent to rewrite existing student physics or tests.
 
 See [`DEVICE-WORKFLOWS.md`](./DEVICE-WORKFLOWS.md) for the matched laptop, Codespaces/iPad, and github.dev/Pages routes.
+
+The optional stability dry run is documented in [`STABILITY-UNIT-RUNBOOK.md`](./STABILITY-UNIT-RUNBOOK.md). Its five entries are planned slots in the module rail, not prebuilt physics. When a student adds a matching feature ID, automatic discovery replaces the placeholder with the verified analysis while retaining the shared 3D aircraft and renderer.
