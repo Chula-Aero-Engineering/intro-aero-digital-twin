@@ -51,7 +51,22 @@ function airplaneGroup(aircraft) {
   return { group, span, length };
 }
 
-function overlayGroup(scene, scale) {
+export const INSTRUCTIONAL_OVERLAY_RENDER_ORDER = 1000;
+
+export function keepInstructionalOverlayVisible(object) {
+  object.traverse((child) => {
+    child.renderOrder = INSTRUCTIONAL_OVERLAY_RENDER_ORDER;
+    const materials = Array.isArray(child.material) ? child.material : [child.material];
+    materials.filter(Boolean).forEach((material) => {
+      material.depthTest = false;
+      material.depthWrite = false;
+      material.toneMapped = false;
+    });
+  });
+  return object;
+}
+
+export function overlayGroup(scene, scale) {
   const group = new THREE.Group();
   scene.overlays.forEach((overlay) => {
     const color = new THREE.Color(overlay.color || "#dce9ad");
@@ -77,7 +92,7 @@ function overlayGroup(scene, scale) {
       group.add(new THREE.Line(geometry, new THREE.LineBasicMaterial({ color })));
     }
   });
-  return group;
+  return keepInstructionalOverlayVisible(group);
 }
 
 export default function AircraftViewport({ aircraft, scene, attitude }) {
@@ -119,6 +134,7 @@ export default function AircraftViewport({ aircraft, scene, attitude }) {
     const { group: fallbackAircraft, span } = airplaneGroup(aircraft);
     const aircraftRoot = new THREE.Group();
     aircraftRoot.add(fallbackAircraft);
+    aircraftRoot.add(overlayGroup(normalizedScene, span));
     threeScene.add(aircraftRoot);
     let disposed = false;
 
@@ -151,7 +167,6 @@ export default function AircraftViewport({ aircraft, scene, attitude }) {
         // The procedural aircraft remains visible when an asset cannot be loaded.
       },
     );
-    threeScene.add(overlayGroup(normalizedScene, span));
     threeScene.add(new THREE.HemisphereLight(0xe7fff6, 0x173832, 2.4));
     const keyLight = new THREE.DirectionalLight(0xffffff, 3.2);
     keyLight.position.set(3, -2, 5);
