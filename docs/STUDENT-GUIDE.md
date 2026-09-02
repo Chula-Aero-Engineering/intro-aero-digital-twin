@@ -2,6 +2,8 @@
 
 This repository helps you turn newly learned aerospace physics into a small computational feature. It does not require you to become a web developer. You are responsible for the engineering reasoning; an ordinary ChatGPT conversation may help translate your bounded specification into code.
 
+For the complete browser-based Stage 4 walkthrough—from creating a personal GitHub fork through prompting ChatGPT, adding the three `trim-response` files, testing, previewing, pushing, and publishing—use [`STAGE-4-STUDENT-GUIDE.md`](./STAGE-4-STUDENT-GUIDE.md).
+
 > **AI-generated code is an implementation candidate, not engineering evidence. A feature is not accepted until its behavior has been independently verified.**
 
 ## A. Understand

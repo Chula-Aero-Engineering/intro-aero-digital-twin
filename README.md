@@ -72,6 +72,8 @@ Instructor changes use a clean `core/<lesson-slug>` branch and are checked with 
 ## Teaching guides
 
 - [`Student guide`](docs/STUDENT-GUIDE.md) — the recurring understand-to-decision workflow.
+- [`Stage 4 student guide`](docs/STAGE-4-STUDENT-GUIDE.md) — exact GitHub fork, ChatGPT, three-file, Codespaces, and Pages workflow for `trim-response`.
+- [`Stage 4 starter specification`](templates/STAGE-4-TRIM-RESPONSE-STARTER.md) — instructor-scaffolded one-file ChatGPT input with student prediction and verification sections.
 - [`Instructor guide`](docs/INSTRUCTOR-GUIDE.md) — three levels of progressive scaffolding.
 - [`AI workflow`](docs/AI-WORKFLOW.md) — appropriate and inappropriate uses of AI.
 - [`Troubleshooting`](docs/TROUBLESHOOTING.md) — evidence-based recovery prompts.
