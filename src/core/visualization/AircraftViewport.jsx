@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { normalizeScene } from "./visualizationContract.js";
-import { bodyAttitudeToScene, bodyVectorToScene } from "./aircraftFrame.js";
+import { aircraftCameraPresets, bodyAttitudeToScene, bodyVectorToScene, cameraPresetToScene } from "./aircraftFrame.js";
 
 function disposeObject(object) {
   object.traverse((child) => {
@@ -83,10 +83,19 @@ function overlayGroup(scene, scale) {
 export default function AircraftViewport({ aircraft, scene, attitude }) {
   const hostRef = useRef(null);
   const attitudeRef = useRef(attitude);
+  const applyCameraPresetRef = useRef(null);
+  const selectedViewRef = useRef("iso");
   const [webglFailed, setWebglFailed] = useState(false);
+  const [selectedViewId, setSelectedViewId] = useState("iso");
   const normalizedScene = normalizeScene(scene);
 
   useEffect(() => { attitudeRef.current = attitude; }, [attitude]);
+
+  function chooseCameraPreset(presetId) {
+    selectedViewRef.current = presetId;
+    setSelectedViewId(presetId);
+    applyCameraPresetRef.current?.(presetId);
+  }
 
   useEffect(() => {
     const host = hostRef.current;
@@ -148,14 +157,24 @@ export default function AircraftViewport({ aircraft, scene, attitude }) {
     keyLight.position.set(3, -2, 5);
     threeScene.add(keyLight);
 
-    camera.position.set(span * 1.3, -span * 1.45, span * 0.8);
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.enablePan = false;
     controls.minDistance = span * 1.25;
     controls.maxDistance = span * 4.5;
     controls.target.set(0, 0, 0);
-    controls.update();
+    const applyCameraPreset = (presetId) => {
+      const preset = cameraPresetToScene(presetId, span * 2.25);
+      camera.up.set(preset.up.x, preset.up.y, preset.up.z).normalize();
+      camera.position.set(preset.position.x, preset.position.y, preset.position.z);
+      controls.target.set(0, 0, 0);
+      camera.lookAt(controls.target);
+      controls.update();
+    };
+    const onOrbitStart = () => setSelectedViewId(null);
+    controls.addEventListener("start", onOrbitStart);
+    applyCameraPresetRef.current = applyCameraPreset;
+    applyCameraPreset(selectedViewRef.current);
 
     let animationFrame;
     let visible = true;
@@ -189,7 +208,9 @@ export default function AircraftViewport({ aircraft, scene, attitude }) {
       cancelAnimationFrame(animationFrame);
       document.removeEventListener("visibilitychange", onVisibility);
       observer.disconnect();
+      controls.removeEventListener("start", onOrbitStart);
       controls.dispose();
+      if (applyCameraPresetRef.current === applyCameraPreset) applyCameraPresetRef.current = null;
       disposeObject(threeScene);
       renderer.dispose();
       renderer.domElement.remove();
@@ -200,7 +221,21 @@ export default function AircraftViewport({ aircraft, scene, attitude }) {
     <section className="aircraft-viewport" aria-labelledby="aircraft-view-title">
       <div className="visual-card-heading viewport-heading">
         <div><p className="eyebrow">Persistent aircraft</p><h2 id="aircraft-view-title">Semester aircraft</h2></div>
-        <p>Drag to orbit · pinch or scroll to zoom</p>
+        <div className="viewport-tools">
+          <p>Drag to orbit · pinch or scroll to zoom</p>
+          <div className="view-presets" aria-label="Aircraft camera presets">
+            {aircraftCameraPresets.map((preset) => (
+              <button
+                key={preset.id}
+                type="button"
+                aria-pressed={selectedViewId === preset.id}
+                className={selectedViewId === preset.id ? "active" : ""}
+                title={preset.directionLabel}
+                onClick={() => chooseCameraPreset(preset.id)}
+              >{preset.label}</button>
+            ))}
+          </div>
+        </div>
       </div>
       {webglFailed ? (
         <div className="webgl-fallback"><strong>3D view unavailable</strong><span>The analysis and plots still work. Try a current Safari, Chrome, Edge, or Firefox browser.</span></div>

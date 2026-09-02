@@ -87,6 +87,13 @@ input:focus { outline: 3px solid #ffb39f; border-color: var(--accent); }
 .visual-card-heading h2, .visual-card-heading h3 { margin: 0; font-family: Georgia, serif; font-size: 1.55rem; font-weight: 400; }
 .viewport-heading { border-color: #41635c; }
 .viewport-heading > p { margin: 5px 0 0; color: #bbccc6; font-size: .73rem; }
+.viewport-tools { display: grid; justify-items: end; gap: 8px; }
+.viewport-tools > p { margin: 0; color: #bbccc6; font-size: .7rem; }
+.view-presets { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; }
+.view-presets button { padding: 5px 7px; border: 1px solid #68827b; color: #d9e4df; background: #183b35; font-size: .65rem; font-weight: 750; cursor: pointer; }
+.view-presets button:hover, .view-presets button:focus-visible { border-color: var(--lime); color: white; }
+.view-presets button:focus-visible { outline: 2px solid var(--lime); outline-offset: 1px; }
+.view-presets button.active { border-color: var(--lime); color: var(--ink); background: var(--lime); }
 .three-host { width: 100%; height: clamp(330px, 44vw, 560px); touch-action: none; }
 .three-host canvas { display: block; width: 100%; height: 100%; }
 .viewport-caption { min-height: 52px; margin: 0; padding: 14px 20px; border-top: 1px solid #41635c; color: #d6e1dd; font-size: .8rem; line-height: 1.45; }
@@ -116,8 +123,19 @@ input:focus { outline: 3px solid #ffb39f; border-color: var(--accent); }
 .prerequisite-list .missing { color: #8a4f42; }
 .simulation-panel, .evidence-report { grid-column: 1 / -1; border: 1px solid var(--ink); background: white; box-shadow: 8px 8px 0 #dfe3da; }
 .simulation-panel { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px 28px; align-items: start; padding: 22px; }
+.simulation-panel-compact { grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 12px 22px; padding: 13px 16px; }
+.simulation-panel-compact h3 { font-size: 1.3rem; }
+.simulation-panel-compact .eyebrow { margin-bottom: 4px; }
+.simulation-panel-compact .simulation-disclaimer { margin-top: 4px; }
+.simulation-panel-compact .simulation-status { gap: 16px; }
+.simulation-panel-compact .simulation-readout { min-width: 112px; }
+.simulation-panel-compact .simulation-readout strong { font-size: 1.5rem; }
+.simulation-panel-compact .simulation-actions { grid-column: auto; flex-wrap: nowrap; }
 .simulation-panel h3, .evidence-report h3 { margin: 0; font-family: Georgia, serif; font-size: 1.65rem; font-weight: 400; }
 .simulation-disclaimer { max-width: 680px; margin: 8px 0 0; color: #66706b; font-size: .76rem; line-height: 1.45; }
+.simulation-status { display: flex; align-items: center; justify-content: flex-end; gap: 24px; }
+.simulation-duration { display: grid; gap: 5px; color: #66706b; font-size: .68rem; font-weight: 750; letter-spacing: .04em; text-transform: uppercase; }
+.simulation-duration input { width: 78px; padding: 7px 8px; }
 .simulation-readout { display: grid; justify-items: end; }
 .simulation-readout strong { color: var(--green); font-family: Georgia, serif; font-size: 2rem; font-weight: 400; }
 .simulation-readout span { color: #66706b; font-size: .72rem; }
@@ -186,13 +204,14 @@ footer span { color: #a9b1ac; font-size: .75rem; text-transform: uppercase; lett
 .workspace-panel { grid-column: 1 / -1; min-width: 0; min-height: 0; padding: 16px; overflow: auto; border: 1px solid var(--ink); background: #eef0ea; }
 .workspace-panel[hidden] { display: none; }
 .workspace-panel > .panel, .workspace-panel > .feature-card, .workspace-panel > .evidence-report, .workspace-panel > .planned-module { margin: 0; }
-.workspace-panel-aircraft { display: grid; grid-template-columns: minmax(0, 2fr) minmax(260px, .8fr); gap: 16px; overflow: hidden; }
+.workspace-panel-aircraft { display: grid; grid-template-columns: minmax(0, 2fr) minmax(260px, .8fr); grid-template-rows: minmax(0, 1fr) auto; gap: 16px; overflow: hidden; }
 .workspace-panel-aircraft .aircraft-viewport { grid-column: auto; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; min-height: 0; }
 .workspace-panel-aircraft .overview { min-width: 0; padding: 22px; overflow: auto; border: 1px solid var(--ink); background: white; box-shadow: 8px 8px 0 #dfe3da; }
 .workspace-panel-aircraft .overview .section-heading { margin-bottom: 18px; }
 .workspace-panel-aircraft .overview .section-heading h2 { font-size: 1.7rem; }
 .workspace-panel-aircraft .parameter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .workspace-panel-aircraft .parameter-readout { padding: 14px 8px 14px 0; }
+.workspace-panel-aircraft > .simulation-panel { grid-column: 1 / -1; }
 .workspace-panel-inputs .panel, #workspace-panel-inputs .panel { min-height: 100%; padding: clamp(24px, 4vw, 56px); border: 1px solid var(--ink); background: white; box-shadow: 8px 8px 0 #dfe3da; }
 .workspace-panel-plots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: start; gap: 16px; }
 .workspace-panel-plots .plot-card:only-child { grid-column: 1 / -1; }
@@ -252,13 +271,19 @@ footer span { color: #a9b1ac; font-size: .75rem; text-transform: uppercase; lett
   .workspace-tabs button { flex: 0 0 auto; }
   .workspace-panel { padding: 12px; }
   .workspace-panel-aircraft, .workspace-panel-plots { grid-template-columns: 1fr; overflow: visible; }
+  .workspace-panel-aircraft { grid-template-rows: auto auto auto; }
   .workspace-panel-aircraft .aircraft-viewport { min-height: 430px; }
+  .workspace-panel-aircraft > .simulation-panel { grid-column: 1; }
   .workspace-panel-response { grid-template-rows: auto auto; }
   .simulation-panel { grid-template-columns: 1fr; }
+  .simulation-status { justify-content: space-between; }
+  .simulation-panel-compact .simulation-actions { grid-column: 1; flex-wrap: wrap; }
   .simulation-readout { justify-items: start; }
   .evidence-grid, .evidence-columns { grid-template-columns: 1fr; }
   .three-host { height: 340px; }
   .viewport-heading { display: block; }
+  .viewport-tools { justify-items: start; margin-top: 12px; }
+  .view-presets { justify-content: flex-start; }
 }
 
 @media (min-width: 901px) and (max-width: 1100px) {

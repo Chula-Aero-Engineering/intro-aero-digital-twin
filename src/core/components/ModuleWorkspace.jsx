@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import FeatureCard from "../features/FeatureCard.jsx";
 import { resolveFeatureAnalysis } from "../features/featureContract.js";
 import AircraftViewport from "../visualization/AircraftViewport.jsx";
@@ -6,7 +6,7 @@ import EngineeringPlot from "../visualization/EngineeringPlot.jsx";
 import { learningModeFor, learningModes } from "../data/learningModes.js";
 import { buildCurriculum } from "../data/curriculum.js";
 import { capabilityContext } from "../simulation/runtime.js";
-import SimulationPanel, { simulationPlot } from "../simulation/SimulationPanel.jsx";
+import SimulationPanel, { simulationPlot, useSimulationController } from "../simulation/SimulationPanel.jsx";
 import { showsSimulationResponse, simulationDisplayMode } from "../simulation/displayMode.js";
 import EvidenceReport from "./EvidenceReport.jsx";
 import AircraftOverview from "./AircraftOverview.jsx";
@@ -56,9 +56,9 @@ export default function ModuleWorkspace({ featureEntries, registry, aircraft, in
       return resolveFeatureAnalysis(activeFeature, aircraft, {});
     }
   }, [activeModule, activeFeature, aircraft, modelEntries]);
-  const [session, setSession] = useState(null);
+  const simulationController = useSimulationController({ activeModule, registry, aircraft });
+  const session = simulationController.session;
   const [selectedPanelId, setSelectedPanelId] = useState("aircraft");
-  const onSessionChange = useCallback((next) => setSession(next), []);
   const livePlot = showSimulation ? simulationPlot(session) : null;
   const panelAvailability = {
     aircraft: Boolean(activeModule),
@@ -167,6 +167,7 @@ export default function ModuleWorkspace({ featureEntries, registry, aircraft, in
             <div id="workspace-panel-aircraft" className="workspace-panel workspace-panel-aircraft" role="tabpanel" aria-labelledby="workspace-tab-aircraft" hidden={activePanelId !== "aircraft"}>
               <AircraftViewport aircraft={aircraft} scene={analysis?.scene} attitude={showSimulation ? session?.state : null} />
               <AircraftOverview aircraft={aircraft} parameterKeys={inputKeys} />
+              {panelAvailability.response && <SimulationPanel controller={simulationController} compact idSuffix="aircraft" />}
             </div>
 
             <div id="workspace-panel-inputs" className="workspace-panel" role="tabpanel" aria-labelledby="workspace-tab-inputs" hidden={activePanelId !== "inputs"}>
@@ -192,7 +193,7 @@ export default function ModuleWorkspace({ featureEntries, registry, aircraft, in
             </div>}
 
             {panelAvailability.response && <div id="workspace-panel-response" className="workspace-panel workspace-panel-response" role="tabpanel" aria-labelledby="workspace-tab-response" hidden={activePanelId !== "response"}>
-              <SimulationPanel activeModule={activeModule} registry={registry} aircraft={aircraft} onSessionChange={onSessionChange} />
+              <SimulationPanel controller={simulationController} idSuffix="response" />
               {livePlot ? <EngineeringPlot plot={livePlot} /> : <div className="workspace-empty"><p className="eyebrow">Response history</p><h3>Run or step the model to create a plot.</h3><p>The aircraft view uses the same state history, so the motion and graph stay synchronized.</p></div>}
             </div>}
 

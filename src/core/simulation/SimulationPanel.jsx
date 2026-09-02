@@ -33,26 +33,35 @@ export function simulationPlot(session) {
   };
 }
 
-export default function SimulationPanel({ activeModule, registry, aircraft, onSessionChange }) {
+export function useSimulationController({ activeModule, registry, aircraft }) {
   const entries = useMemo(
     () => activeModule?.entry ? modelsForFeature(activeModule.feature.id, registry) : [],
     [activeModule, registry],
   );
+  const declaredDurationS = activeModule?.feature?.simulation?.durationS ?? aircraft.simulationDurationS;
+  const minimumDurationS = Math.max(
+    FIXED_STEP_S,
+    (activeModule?.feature?.simulation?.disturbance?.pitchRamp?.durationS ?? 0) + FIXED_STEP_S,
+  );
+  const [durationS, setDurationS] = useState(() => Math.max(declaredDurationS, minimumDurationS));
   const scenario = useMemo(() => ({
-    durationS: activeModule?.feature?.simulation?.durationS ?? aircraft.simulationDurationS,
+    durationS,
     initialState: activeModule?.feature?.simulation?.initialState,
     controls: activeModule?.feature?.simulation?.controls,
     disturbance: activeModule?.feature?.simulation?.disturbance,
     plotStateKeys: activeModule?.feature?.simulation?.plotStateKeys,
-  }), [activeModule, aircraft.simulationDurationS]);
+  }), [activeModule, durationS]);
   const runnable = Boolean(activeModule?.runtimeReady && entries.length > 0);
   const [session, setSession] = useState(() => createSafeSession(entries, aircraft, scenario));
 
   useEffect(() => {
+    setDurationS(Math.max(declaredDurationS, minimumDurationS));
+  }, [activeModule?.feature?.id, declaredDurationS, minimumDurationS]);
+
+  useEffect(() => {
     const next = createSafeSession(entries, aircraft, scenario);
     setSession(next);
-    onSessionChange(next);
-  }, [activeModule?.feature?.id, aircraft, entries, scenario, onSessionChange]);
+  }, [activeModule?.feature?.id, aircraft, entries, scenario]);
 
   useEffect(() => {
     if (session.status !== "running" || !runnable) return undefined;
@@ -61,58 +70,82 @@ export default function SimulationPanel({ activeModule, registry, aircraft, onSe
         try {
           const next = advanceSimulationSession(current, { entries, aircraft, scenario, stepS: FIXED_STEP_S });
           const running = next.status === "complete" ? next : { ...next, status: "running" };
-          onSessionChange(running);
           return running;
         } catch (error) {
           const failed = { ...current, status: "error", error: error.message };
-          onSessionChange(failed);
           return failed;
         }
       });
     }, FIXED_STEP_S * 1000);
     return () => window.clearInterval(timer);
-  }, [session.status, runnable, entries, aircraft, scenario, onSessionChange]);
+  }, [session.status, runnable, entries, aircraft, scenario]);
 
   function reset() {
     const next = createSafeSession(entries, aircraft, scenario);
     setSession(next);
-    onSessionChange(next);
   }
 
   function step() {
     try {
       const next = advanceSimulationSession(session, { entries, aircraft, scenario });
       setSession(next);
-      onSessionChange(next);
     } catch (error) {
       const failed = { ...session, status: "error", error: error.message };
       setSession(failed);
-      onSessionChange(failed);
     }
   }
 
   function clearRun() {
     const next = { ...session, history: [] };
     setSession(next);
-    onSessionChange(next);
   }
 
   function toggleRun() {
     const next = { ...session, status: session.status === "running" ? "paused" : "running" };
     setSession(next);
-    onSessionChange(next);
   }
 
+  function setDuration(nextDurationS) {
+    if (!Number.isFinite(nextDurationS) || nextDurationS <= 0) return;
+    setDurationS(Math.max(nextDurationS, minimumDurationS));
+  }
+
+  return { session, runnable, durationS, minimumDurationS, setDuration, reset, step, clearRun, toggleRun };
+}
+
+export default function SimulationPanel({ controller, compact = false, idSuffix = "response" }) {
+  const { session, runnable, durationS, minimumDurationS, setDuration, reset, step, clearRun, toggleRun } = controller;
+  const titleId = `simulation-title-${idSuffix}`;
+  const durationId = `simulation-duration-${idSuffix}`;
+
   return (
-    <section className="simulation-panel" aria-labelledby="simulation-title">
+    <section className={`simulation-panel${compact ? " simulation-panel-compact" : ""}`} aria-labelledby={titleId}>
       <div>
         <p className="eyebrow">Reduced-order runtime</p>
-        <h3 id="simulation-title">Deterministic response</h3>
+        <h3 id={titleId}>Deterministic response</h3>
         <p className="simulation-disclaimer">Linear teaching models only · fixed 0.02 s RK4 step · not a validated nonlinear 6-DOF digital twin</p>
       </div>
-      <div className="simulation-readout" aria-live="polite">
-        <strong>{session.timeS.toFixed(2)} s</strong>
-        <span>{runnable ? session.status : "Waiting for an installed Version 4 model"}</span>
+      <div className="simulation-status">
+        <label className="simulation-duration" htmlFor={durationId}>
+          <span>Run duration</span>
+          <span className="input-with-unit">
+            <input
+              id={durationId}
+              type="number"
+              min={minimumDurationS}
+              step={FIXED_STEP_S}
+              value={Number(durationS.toFixed(2))}
+              disabled={session.status === "running"}
+              title="Changing the duration resets the simulation"
+              onChange={(event) => setDuration(Number(event.target.value))}
+            />
+            <span>s</span>
+          </span>
+        </label>
+        <div className="simulation-readout" aria-live="polite">
+          <strong>{session.timeS.toFixed(2)} s</strong>
+          <span>{runnable ? `${session.status} · ends at ${durationS.toFixed(2)} s` : "Waiting for an installed Version 4 model"}</span>
+        </div>
       </div>
       <div className="simulation-actions">
         <button type="button" disabled={!runnable || session.status === "complete"} onClick={toggleRun}>
