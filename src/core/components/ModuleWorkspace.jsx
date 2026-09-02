@@ -6,7 +6,7 @@ import EngineeringPlot from "../visualization/EngineeringPlot.jsx";
 import { learningModeFor, learningModes } from "../data/learningModes.js";
 import { buildCurriculum } from "../data/curriculum.js";
 import { capabilityContext } from "../simulation/runtime.js";
-import SimulationPanel, { simulationPlot, useSimulationController } from "../simulation/SimulationPanel.jsx";
+import SimulationPanel, { simulationPlots, useSimulationController } from "../simulation/SimulationPanel.jsx";
 import { showsSimulationResponse, simulationDisplayMode } from "../simulation/displayMode.js";
 import EvidenceReport from "./EvidenceReport.jsx";
 import AircraftOverview from "./AircraftOverview.jsx";
@@ -59,7 +59,7 @@ export default function ModuleWorkspace({ featureEntries, registry, aircraft, in
   const simulationController = useSimulationController({ activeModule, registry, aircraft });
   const session = simulationController.session;
   const [selectedPanelId, setSelectedPanelId] = useState("aircraft");
-  const livePlot = showSimulation ? simulationPlot(session) : null;
+  const livePlots = showSimulation ? simulationPlots(session) : [];
   const panelAvailability = {
     aircraft: Boolean(activeModule),
     inputs: Boolean(activeModule),
@@ -194,7 +194,7 @@ export default function ModuleWorkspace({ featureEntries, registry, aircraft, in
 
             {panelAvailability.response && <div id="workspace-panel-response" className="workspace-panel workspace-panel-response" role="tabpanel" aria-labelledby="workspace-tab-response" hidden={activePanelId !== "response"}>
               <SimulationPanel controller={simulationController} idSuffix="response" />
-              {livePlot ? <EngineeringPlot plot={livePlot} /> : <div className="workspace-empty"><p className="eyebrow">Response history</p><h3>Run or step the model to create a plot.</h3><p>The aircraft view uses the same state history, so the motion and graph stay synchronized.</p></div>}
+              {livePlots.length > 0 ? livePlots.map((plot) => <EngineeringPlot key={plot.id} plot={plot} />) : <div className="workspace-empty"><p className="eyebrow">Response history</p><h3>Run or step the model to create a plot.</h3><p>The aircraft view uses the same state history, so the motion and graph stay synchronized.</p></div>}
             </div>}
 
             {panelAvailability.evidence && <div id="workspace-panel-evidence" className="workspace-panel" role="tabpanel" aria-labelledby="workspace-tab-evidence" hidden={activePanelId !== "evidence"}>

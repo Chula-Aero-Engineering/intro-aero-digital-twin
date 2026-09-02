@@ -33,6 +33,34 @@ export function simulationPlot(session) {
   };
 }
 
+export function simulationRatePlot(session) {
+  if (!session?.history?.length || !Array.isArray(session.plotStateKeys)) return null;
+  const requestedKeys = new Set(session.plotStateKeys.map(String));
+  const rateSeries = [
+    ["Pitch rate", "pitchRateRadS", "#b7482f"],
+    ["Roll rate", "rollRateRadS", "#164f45"],
+    ["Yaw rate", "yawRateRadS", "#6886c5"],
+  ].filter(([, key]) => requestedKeys.has(key) && session.history.some((sample) => Number.isFinite(sample[key])));
+  if (rateSeries.length === 0) return null;
+  return {
+    id: "simulation-angular-rate-history",
+    title: "Angular-rate response history",
+    xLabel: "Time (s)",
+    yLabel: "Angular rate (deg/s)",
+    currentX: session.timeS,
+    referenceLines: (session.events || []).map(({ timeS, label }) => ({ axis: "x", value: timeS, label })),
+    series: rateSeries.map(([label, key, color]) => ({
+      label,
+      color,
+      points: session.history.map((sample) => ({ x: sample.timeS, y: sample[key] * 180 / Math.PI })),
+    })),
+  };
+}
+
+export function simulationPlots(session) {
+  return [simulationPlot(session), simulationRatePlot(session)].filter(Boolean);
+}
+
 export function useSimulationController({ activeModule, registry, aircraft }) {
   const entries = useMemo(
     () => activeModule?.entry ? modelsForFeature(activeModule.feature.id, registry) : [],

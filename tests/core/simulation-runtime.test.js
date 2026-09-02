@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { rk4Step } from "../../src/core/simulation/integrator.js";
 import { createSimulationSession, prescribedPitchState, runSimulation } from "../../src/core/simulation/runtime.js";
-import { simulationPlot } from "../../src/core/simulation/SimulationPanel.jsx";
+import { simulationPlot, simulationPlots, simulationRatePlot } from "../../src/core/simulation/SimulationPanel.jsx";
 
 const aircraft = { pitchInertiaKgM2: 2, pitchRateRadS: 0, rollRateRadS: 0, yawRateRadS: 0, bankAngleDeg: 0, simulationDurationS: 1 };
 
@@ -84,5 +84,35 @@ describe("topic-neutral simulation runtime", () => {
     });
     expect(plot.series.map(({ label }) => label)).toEqual(["Pitch angle"]);
     expect(plot.referenceLines).toEqual([{ axis: "x", value: 0.1, label: "Disturbance released" }]);
+  });
+
+  it("plots explicitly requested angular rates separately from attitude angles", () => {
+    const session = {
+      timeS: 0.2,
+      plotStateKeys: ["pitchRad", "pitchRateRadS"],
+      events: [],
+      history: [
+        { timeS: 0, pitchRad: 0, pitchRateRadS: 0 },
+        { timeS: 0.2, pitchRad: 0.1, pitchRateRadS: 0.5 },
+      ],
+    };
+    const ratePlot = simulationRatePlot(session);
+    expect(ratePlot.title).toBe("Angular-rate response history");
+    expect(ratePlot.yLabel).toBe("Angular rate (deg/s)");
+    expect(ratePlot.series.map(({ label }) => label)).toEqual(["Pitch rate"]);
+    expect(ratePlot.series[0].points.at(-1).y).toBeCloseTo(0.5 * 180 / Math.PI, 10);
+    expect(simulationPlots(session).map(({ id }) => id)).toEqual([
+      "simulation-attitude-history",
+      "simulation-angular-rate-history",
+    ]);
+  });
+
+  it("does not add a rate plot unless a feature explicitly requests rate states", () => {
+    expect(simulationRatePlot({
+      timeS: 0,
+      plotStateKeys: ["pitchRad"],
+      events: [],
+      history: [{ timeS: 0, pitchRad: 0, pitchRateRadS: 1 }],
+    })).toBeNull();
   });
 });
