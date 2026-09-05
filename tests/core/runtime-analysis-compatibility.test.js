@@ -57,6 +57,24 @@ function run(provider, consumer) {
 }
 
 describe("runtime to analysis compatibility", () => {
+  it("preserves working consumers that read calculation fields without metadata checks", () => {
+    const { provider, consumer, output } = fixtures();
+    const canonical = Object.freeze({
+      results: [{ label: "Existing result", value: 7, unit: "" }],
+      verificationCases: [Object.freeze({ label: "Existing check", passed: true })],
+      decision: { question: "Available?", interpretation: "Existing analysis", status: "neutral" },
+    });
+    consumer.feature.analyze = (_aircraft, context) => {
+      const source = context["test.source"];
+      expect(source.values).toBe(output.values);
+      expect(source.forcesBodyN).toBe(output.forcesBodyN);
+      expect(source.momentsBodyNm).toBe(output.momentsBodyNm);
+      return canonical;
+    };
+    const { context } = run(provider, consumer);
+    expect(resolveFeatureAnalysis(consumer.feature, {}, context)).toBe(canonical);
+  });
+
   it("renders a version-checking feature and name-based verification cases through the real runtime", () => {
     const { output, analysis, provider, consumer } = fixtures();
     const { registry, context } = run(provider, consumer);
